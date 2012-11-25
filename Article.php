@@ -15,6 +15,9 @@
     function set_uactors($uactors) {
       $this->uactors = array_map('trim', explode(',', strtolower($uactors)));
     }
+    function set_new_uactors($uactors) {
+      $this->uactors = array_unique($uactors);
+    }
     function set_utopics($utopics) {
       // check for both , and ; deliminators
       $this->utopics = array();
@@ -39,6 +42,9 @@
     }
     function get_uactors() {
       return $this->uactors;
+    }
+    function get_uactors_string() {
+      return implode(',', $this->uactors);
     }
     function get_utopics() {
       return $this->utopics;

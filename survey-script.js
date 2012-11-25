@@ -237,27 +237,31 @@ $(function () { //ready function
   Timeline.OriginalEventPainter.prototype._showBubble = function (x, y, evt) {
     var mheader = $('#modal-bubble .modal-header');
     var desc = evt._description.split('|');
-    var e = $("#actor-filter option[value='"+$.trim(desc[0].toLowerCase())+"']");
-    console.log(e);
-    if (e.attr("selected") == "selected") {
-      e.removeAttr("selected");
-    } else {
-      e.attr("selected", "selected");
-    }
-    $('#actor-filter').multiselect('refresh');
+    
     var sdate = parseDate(evt._start.toString());
     var edate = parseDate(evt._end.toString());
     var date = sdate.getDate() + ' ' + monthNames[sdate.getMonth()];
     date += ' - ' + edate.getDate() + ' ' + monthNames[edate.getMonth()];
     
-    mheader.html('<a class="close" data-dismiss="modal" aria-hidden="true"> \
-                &times;</a><h3>Actor: ' + toTitleCase(desc[0]) + ', Topic: ' + 
-                toTitleCase(desc[1]) + '</h3>' + date);
+    headercode = '<a class="close" data-dismiss="modal" aria-hidden="true"> \
+                  &times;</a>';
+    if (desc[0].split('^').length == 1 && desc[1].split('^').length == 1) {
+      headercode += '<h3>Actor: ' + toTitleCase(desc[0]) + ', Topic: ' + 
+                    toTitleCase(desc[1]) + '</h3>' + date;
+      
+      var headlines = '<a href="#" id="' + desc[0] + '" class="add-actor">' +
+                      'Add this actor in filter</a><br>' +
+                      '<em>Articles relevant to this theme (Click to read full):</em><ol>';
+    } else {
+      headercode += '<strong><u>Actors</u></strong>: ' + desc[0].split('^').map(toTitleCase).join(', ');
+      headercode += '<br><strong><u>Topics</u></strong>: ' + desc[1].split('^').map(toTitleCase).join(', ');
+      var headlines = '<em>Articles relevant to this theme (Click to read full):</em><ol>';
+    }
+    mheader.html(headercode);
     
     var mbody = $('#modal-bubble .modal-body');
     var descs = desc[2].toString();
     descs = descs.split('^');
-    var headlines = '<ol>';
     for (var i = 0; i < descs.length; i++) {
       var t = descs[i].split('#');
       headlines += '<li rel="tooltip" class="evt-call" \
@@ -265,7 +269,16 @@ $(function () { //ready function
                     t[0] + '</a></li>';
     }
     headlines += '</ol>';
-    mbody.html('News Stories:' + headlines);
+    mbody.html(headlines);
+    $('.add-actor').click(function () {
+      var e = $("#actor-filter option[value='"+$.trim($(this).attr('id'))+"']");
+      if (e.attr("selected") == "selected") {
+        e.removeAttr("selected");
+      } else {
+        e.attr("selected", "selected");
+      }
+      $('#actor-filter').multiselect('refresh');
+    });
     $('.evt-call').each(function () {$(this).children('a').tooltip();});
     $('.evt-call').click(function () {
       var id = $(this).attr('name');

@@ -4,6 +4,8 @@
   define ('BLACK', 'rgb(0,0,0)');
   define ('br', '<br>');
   define ('DESCRIPTION_DELIMITER', '|');
+  define ('DELIMITER', '^');
+  define ('ARTICLE_ID', '#');
   require_once 'Article.php';
   // is array subarr contained in arr, assuming both are already sorted
   function is_contained($subarr, $arr) {
@@ -185,7 +187,7 @@
     return 'rgb(' . $rgb . ')';
   }
   function assign_colors($arr) {
-    $step = 360 / sizeof($arr);
+    $step = ceil(360 / sizeof($arr) + 1);
     $colors = array();
     $hue = 0;
     foreach ($arr as $val) {
@@ -241,6 +243,22 @@
     }
     return implode('^', $h);
   }
+  
+  function get_all_actors($articles, $raids) {
+    $a = array();
+    foreach ($raids as $raid) {
+      $a = array_merge($a, $articles[$raid]->get_uactors());
+    }
+    return implode('^', array_unique($a));
+  }
+  function get_all_topics($articles, $raids) {
+    $t = array();
+    foreach ($raids as $raid) {
+      $t = array_merge($t, $articles[$raid]->get_utopics());
+    }
+    return implode('^', array_unique($t));
+  }
+  
   // timeline_actor: the actor whose events are constructed
   // timeline_topics: topics at this level. only these are shown
   // article_ids: relevant ids of this actor in the entire $articles list
@@ -272,7 +290,8 @@
         // create an elem for all of these topics
         $j = 0;
         foreach ($pt as $t) {
-          $h = $timeline_actor . '|' . $t . '|' . get_headlines($articles, $pa);
+          $h = get_headlines($articles, $pa);
+          $h = $timeline_actor . '|' . $t . '|' . $h;
           $elem = array(
             'title'       =>  $put_title ? $timeline_actor : '',
             'description' =>  $h,
@@ -294,6 +313,38 @@
     $elems = gap_fill($elems, $tid);
     return $elems;
   }
+  
+  function create_partition_events($articles, $period_partitions) {
+    $elems = array();
+    foreach ($period_partitions as $partitions) {
+      // each partition becomes an event
+      $i = 1;
+      
+      for ($j = sizeof($partitions) - 1; $j >= 0; $j--) {
+        $partition = $partitions[$j];
+        $article_ids = array_values($partition[1]);
+        $startaid = $article_ids[0];
+        $endaid = end($article_ids);
+        $all_actors = get_all_actors($articles, $article_ids);
+        $all_topics = get_all_topics($articles, $article_ids);
+        $h = get_headlines($articles, $article_ids);
+        $h = $all_actors . '|' . $all_topics . '|' . $h;
+        $elem = array(
+          'title'       =>  '',
+          'tid'         =>  $i,
+          'description' =>  $h,
+          'trackNum'    =>  $i,
+          'textColor'   =>  BLACK,
+          'start'       =>  $articles[$startaid]->get_start_date(),
+          'end'         =>  $articles[$endaid]->get_end_date(),
+          'color'       =>  'rgb(0,0,0)'
+        );
+        array_push($elems, $elem);
+        $i++;
+      }
+    }
+    return $elems;
+  }
   /*
   The key function! The things to be done in this function:
     1. Isolate out the unique topics being talked about, and assign a color
@@ -305,11 +356,9 @@
        N events each of width X/N days and color coded. 
        X = 10 here
   */
-  function get_timeline_events($timeline_actors, $articles, $ra_map, $t_color_map) {
+  function get_timeline_events($timeline_actors, $articles, $ra_map, $t_color_map, $tid) {
     // defaults
     $ws = 20;
-    
-    $tid = 1;
     $elems = array();
     
     foreach ($timeline_actors as $timeline_actor) {
@@ -326,17 +375,48 @@
   /*
     The second alternative. We first time segment articles based on windows,
     and for these periods, we find the actor-based article partitions which
-    will be called EVENTS! Let us go ahead and visualized!
+    will be called EVENTS! Let us go ahead and visualize!
   */
-  function article_periodize($articles) {
+  
+  function rec_partition($period, $ra_map, $pa, $cutoff, $current) {
+    if ($current >= $cutoff) return array();
+    if (empty($period) or empty($pa)) return array();
+    $psize = sizeof($period);
+    $ra_pop = array();
+    $max_effect = -1;
+    foreach ($pa as $a) {
+      $aids = $ra_map[$a];
+      $score = sizeof(array_intersect($aids, $period)) / $psize;
+      if ($max_effect < $score) {
+        $mi_actor = $a;
+        $max_effect = $score;
+      }
+    }
+    $this_actor_ids = array_intersect($period, $ra_map[$mi_actor]);
+    $other_ids = array_diff($period, $this_actor_ids);
+    if (empty($this_actor_ids)) return array();
+    $get_remaining = rec_partition($other_ids, $ra_map, $pa, $cutoff, $current + 1);
+    array_push($get_remaining, array($mi_actor, $this_actor_ids));
+    return $get_remaining;
+  }
+  
+  function article_periodize($articles, $ra_map) {
+    $cutoff = 3;
     $st = $articles[0]->get_start_date_ts();
     $ws = 20;
     $periods = array(array()); // partitioning of articles id
+    $period_actors = array();
     $pid = 0;
     $i = 0;
     while ($i < sizeof($articles)) {
       if (($articles[$i]->days_since($st) / $ws) <= 1) {
         array_push($periods[$pid], $i);
+        if (isset($period_actors[$pid])) {  
+          $period_actors[$pid] = array_merge($period_actors[$pid],
+                                             $articles[$i]->get_uactors());
+        } else {
+          $period_actors[$pid] = $articles[$i]->get_uactors();
+        }
         $i++;
       }
       else {
@@ -345,11 +425,15 @@
         array_push($periods, array());
       }
     }
-    foreach ($periods as $p) {
-      echo $articles[$p[0]]->get_start_date();
+    $period_actors = array_map("array_unique", $period_actors);
+    $period_partitions = array();
+    for ($pid = 0; $pid < sizeof($periods); $pid++) {
+      array_push($period_partitions, rec_partition($periods[$pid], $ra_map,
+                                        $period_actors[$pid], $cutoff, 0));
     }
-    echo json_encode($periods);
+    return $period_partitions;
   }
+  
   
   // the keys have to be sorted by the length of the array it indexes
   function get_actors_by_article_count($ra_map) {

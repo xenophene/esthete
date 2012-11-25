@@ -85,15 +85,22 @@
   $topics = enrich_tags($topics, $articles, 1);
   $actors = enrich_tags($actors, $articles, 0);
   
-  //article_periodize($articles);
 
   // go about showing these events. for each actors in ra_map, show the articles
   // that talk about the actor, by the topic mentioned. have a further description
   // with headline and link
   
   $jsobj = array('events' => array()); // the Timeline javascript object
-  $jsobj['events'] = get_timeline_events($timeline_actors, $articles, $ra_map, $t_color_map);
+  $tid = 1;
+  $partition_events = array();
   
+  if (isset($_GET['on'])) {
+    $tid = 4;
+    $period_partitions = article_periodize($articles, $ra_map);
+    $partition_events = create_partition_events($articles, $period_partitions);
+  }
+  $jsobj['events'] = get_timeline_events($timeline_actors, $articles, $ra_map, $t_color_map, $tid);
+  $jsobj['events'] = array_merge($jsobj['events'], $partition_events);
   
   echo '<script>
     var task_id = ' . json_encode($task_id) . ';
