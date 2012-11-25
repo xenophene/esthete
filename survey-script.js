@@ -237,6 +237,14 @@ $(function () { //ready function
   Timeline.OriginalEventPainter.prototype._showBubble = function (x, y, evt) {
     var mheader = $('#modal-bubble .modal-header');
     var desc = evt._description.split('|');
+    var e = $("#actor-filter option[value='"+$.trim(desc[0].toLowerCase())+"']");
+    console.log(e);
+    if (e.attr("selected") == "selected") {
+      e.removeAttr("selected");
+    } else {
+      e.attr("selected", "selected");
+    }
+    $('#actor-filter').multiselect('refresh');
     var sdate = parseDate(evt._start.toString());
     var edate = parseDate(evt._end.toString());
     var date = sdate.getDate() + ' ' + monthNames[sdate.getMonth()];

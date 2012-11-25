@@ -71,7 +71,7 @@
   // if these are null we will send the task-specific preset actors
   function get_task_id($d) {
     if (array_key_exists('taskid', $d)) return intval($d['taskid']);
-    else return 2;
+    else return 0;
   }
   function get_filtered_actors($d, $actors) {
     $fa = array_map('strtolower', $actors);
@@ -177,7 +177,7 @@
     }
     return $rt_map;
   }
-  function rand_colorCode() {
+  function rand_colorCode($hue) {
     $r = mt_rand(20,180); // generate the red component
     $g = mt_rand(20,180); // generate the green component
     $b = mt_rand(20,180); // generate the blue component
@@ -185,9 +185,12 @@
     return 'rgb(' . $rgb . ')';
   }
   function assign_colors($arr) {
+    $step = 360 / sizeof($arr);
     $colors = array();
+    $hue = 0;
     foreach ($arr as $val) {
-      $colors[$val] = rand_colorCode();
+      $colors[$val] = 'hsl('.$hue.',50%,50%)';
+      $hue += $step;
     }
     return $colors;
   }

@@ -6,12 +6,12 @@
     
     $task_questions = array(
       0 => "Describe the controversy sorrounding Pete Sampras and John McEnroe in the year 2000?",
-      1 => "Describe the nature of media coverage Nitin Gadkari has been getting in the year 2012",
-      2 => "Describe the sports rivalry between Andre Agassi and Pete Sampras in the year 2000",
-      3 => "Describe how Robert Vadra has been highlighted by different sections of political class?",
-      4 => "Discuss the controversy surrounding Subodh Kant Sahay and his brother SKS Ispat" ,
+      1 => "For each of the points below, find an article which verifies the point made about the nature of media coverage <u>Nitin Gadkari</u> got in the year 2012. On finding the article, mark it as `Relevant`.",
+      2 => "Describe the sports rivalry between Andre Agassi and Pete Sampras in the year 2000.",
+      3 => "For each of the points below, find an article which verifies the point made about how <u>Robert Vadra</u> has been highlighted by different sections of political class. On finding the article, mark it as `Relevant`.",
+      4 => "Discuss the controversy surrounding Subodh Kant Sahay and his brother SKS Ispat." ,
       5 => "Which all of the following hold true regarding the events involving Subramanium Swamy and P. Chidambaram in the year 2012?",
-      6 => "Describe all the recent developments related to India's space program",
+      6 => "Describe all the recent developments related to India's space program.",
       7 => "What were some activities Saina Nehwal was involved in besides Badminton [Hint: Try topics like People/Celebrity]"
     );
     echo $task_questions[$task_id];
@@ -24,9 +24,9 @@
             'John McEnroe remarked that Sampras only played for money and personal pride over national glory'
           ),
       1 => array(
-            'Nitin Gadkari was mostly in the news for scams, revolving around his companies',
-            'Nitin Gadkari mostly played accusatory politics, blaming the government and highlighting corruption',
-            'Nitin Gadkari was more in news for developmental politics, campaigning mostly on issues not related to corruption'
+            'Nitin Gadkari was in the news for scams, revolving around his companies',
+            'Nitin Gadkari played accusatory politics, blaming the government and highlighting corruption',
+            'Nitin Gadkari was in news for developmental politics, campaigning on issues not related to corruption'
           ),
       2 => array(
             'Andre Agassi dominated Pete Sampras for all of the year',
