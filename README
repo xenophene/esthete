@@ -1,0 +1,35 @@
+sets up the modified view of ESTHETE. for a given actor, show the
+actors co-occuring and the topics that are determined
+use the MIT Timeline code, to set up the queried actors with the
+times in the year 2000
+
+The survey interface.
+This is the main survey view given to the user. This in itself encapsulates
+both the updated view of the timeline, shown to the user and the interface
+controls on which the user can enter feedback. 
+The work has 2 main components.
+1. The browsing interface. Basically has the timeline, a filter on the
+actors, topics, time. Given a suitable combination, what we show is topic-
+aggregated actor interactions. i.e. for the given actor (one or more entity)
+we query the topics relevant to them, and create tracks for each topic.
+Inside a topic.
+2. For the general survey feedback, we can put in basic options like
+usefulness of various things, and have the main task put on top. Then the
+user can navigate, get access to the articles mark as to be read later, etc
+
+The user may either sending request for a new task or a new set of actors
+within an ongoing task. We maintain a timer for every task session, and
+update it accordingly. The user first selects a task. Accordingly, a set
+defined actors/topics/articles/time-period is taken up specific to the 
+question posed by the task. Now from among these, the user can keep 
+selecting one or more, and then narrow his search. He can keep looking 
+at articles, mark to be read later, etc. He can also indicate a time period
+during which look. Given an (a,t) set, we query articles fitting in them, 
+and then show an aggregation i.e. all actors in a topic together. 
+Separately we have a list of actors, showing all the topics each occurs in.
+And the reverse, i.e. all topics with the actors occuring in each & time period
+There is a separate answer box
+where the user can indicate that he has found the answer or has done 
+enough research, and can end the session, and the timer stops. 
+Everything from the user is logged, which sequence of actors he queried, 
+which articles he looked at, etc.

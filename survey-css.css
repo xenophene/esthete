@@ -1,0 +1,97 @@
+body {
+  margin: 0;
+  padding: 0;
+  font: normal .85em/1.5em Arial, Helvetica, sans-serif;
+}
+#tl {
+  margin: 10px 0 0 0;
+}
+.holder {
+  height: 320px;
+  z-index: 100;
+  width: 100%;
+}
+.filters {
+  padding: 20px 20px 0 20px;
+  background: #fff;
+  color: #111;
+  width: 1100px;
+  /*top: 0px;*/
+  /*position: fixed;*/
+  /*z-index: 100;*/
+}
+.task-desc {
+  width: 900px;
+  margin: 0;
+}
+.task {
+  font-size: 20px;
+  font-weight: bold;
+}
+.footer {
+  font-size: 14px;
+  margin: 0px;
+  padding: 0px;
+}
+.time {
+  position: fixed;
+  font-weight: bold;
+  top: 20px;
+  right: 20px;
+  font-size: 15px;
+  z-index: 100;
+  background: #fff;
+}
+.legend {
+  position: fixed;
+  top: 40px;
+  right: 20px;
+  width: 200px;
+  text-align: right;
+  font-weight: bold;
+  overflow: auto;
+  height: 200px;
+  z-index: 50;
+}
+.topic-include span {
+  background: #fff;
+}
+.legend ul li {
+  cursor: pointer;
+}
+ul {
+  list-style: none;
+  padding-left: 0;
+}
+.use-marker li {
+  display: inline;
+  font-style: italic;
+  cursor: pointer;
+  padding: 0 5px 0 5px;
+}
+.use-marker li:first-child {
+  border-right: solid 1px #111;
+  padding-left: 0;
+}
+.use-marker li:hover {
+  text-decoration: underline;
+}
+.topic {
+  font-weight: bold;
+}
+.highlight {
+  text-decoration: underline;
+  background: #eee;
+}
+#filter-form thead {
+  font-size: 11px;
+  font-weight: bold;
+  text-align: left;
+  padding: 0;
+}
+.hide {
+  display: none;
+}
+.no-resize {
+  resize: none;
+}

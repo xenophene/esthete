@@ -1,0 +1,152 @@
+html { }
+body {
+  font: normal .85em/1.5em Arial, Helvetica, sans-serif;
+  color: #333;
+  position: relative;
+  padding:5px;
+}
+#tl {
+  overflow-x: hidden;
+  overflow-y: hidden;
+  height: 400px;
+}
+#header {
+  height:215px;
+  position: relative;
+  margin: 5px 10px 5px 10px;
+  background: #fff;
+}
+#header h2, h3 {
+  margin: 0px;
+  text-decoration: underline;
+}
+#header #info {
+  padding:7px 0px 0px 8px;
+  margin:0px;
+  /*border-right: 1px solid #ccc;*/
+  width: 440px;
+  height: 215px;
+  color: #644527;
+  font-size: 13px;
+}
+#info p {
+  margin: 0px;
+  padding: 5px;
+}
+#mrt, #mra, #mrp {
+  position: absolute;
+  /*border-right: 1px solid #eee;*/
+  top: 0px;
+  padding: 5px;
+  width: 250px;
+  overflow: auto;
+  height: 210px;
+}
+ul.header {
+  list-style: none;
+  margin: 0px;
+  padding: 5px 0px 0px 5px;
+}
+#header #mra {
+  right: 0px;
+}
+#header #mrt {
+  right: 260px;
+}
+#mrt ul.header {
+  list-style: square;
+}
+#mrt ul li {
+  padding: 2px 0px 2px 0px;
+}
+#header #mrp {
+  right: 520px;
+}
+select {
+  border:solid 2px #644527;
+  font: normal .81em/1.5em Arial, Helvetica, sans-serif;
+  font-size:12px;
+  margin: 30px 0px 5px 0px;
+  padding:4px;
+  width:360px;
+  -moz-border-radius:6px;-webkit-border-radius:6px;
+}
+/*
+input[type="text"], textarea {
+  border:solid 2px #644527;
+  font: normal .81em/1.5em Arial, Helvetica, sans-serif;
+  font-size:12px;
+  margin: 30px 0px 5px 0px;
+  padding:4px;
+  width:180px;
+  -moz-border-radius:6px;-webkit-border-radius:6px;
+}
+*/
+/* slider root element */
+.slider {
+  background:#3C72E6 url(/media/img/gradient/h30.png) repeat-x 0 0;
+  height:9px;
+  position:relative;
+  cursor:pointer;
+  border:1px solid #333;
+  width:200px;
+  float:left;
+  clear:right;
+  margin-top:10px;
+  -moz-border-radius:5px;
+  -webkit-border-radius:5px;
+  -moz-box-shadow:inset 0 0 8px #000;
+}
+#bar-table, tr, td {
+  margin: 0px;
+  padding: 0px;
+}
+input[type="submit"], button {
+  border:solid 1px #644527;
+  background-color:#644527;
+  color:#fff;
+  font-size:12px;
+  padding:4px;
+  -moz-border-radius:6px;-webkit-border-radius:6px;
+}
+/* progress bar (enabled with progress: true) */
+.progress {
+  height:9px;
+  background-color:#C5FF00;
+  display:none;
+  opacity:0.6;
+}
+
+/* drag handle */
+.handle {
+  background:#fff url(/media/img/gradient/h30.png) repeat-x 0 0;
+  height:20px;
+  width:20px;
+  top:-8px;
+  position:absolute;
+  display:block;
+  margin-top:1px;
+  border:1px solid #000;
+  cursor:move;
+  -moz-box-shadow:0 0 6px #000;
+  -webkit-box-shadow:0 0 6px #000;
+  -moz-border-radius:14px;
+  -webkit-border-radius:14px;
+
+}
+
+/* the input field */
+.range {
+  border:1px inset #ddd;
+  float:left;
+  font-size:20px;
+  margin:0 0 0 15px;
+  padding:3px 0;
+  text-align:center;
+  width:50px;
+  display:none;
+  -moz-border-radius:5px;
+  -webkit-border-radius:5px;
+}
+#from, #to {
+}
