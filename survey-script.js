@@ -18,6 +18,7 @@ function get_month_code(mon) {
     case 'Oct': return 9;
     case 'Nov': return 10;
     case 'Dec': return 11;
+	default:	return 0;
   }
 }
 $(function () { //ready function
@@ -339,7 +340,12 @@ $(function () { //ready function
   }
   
   // register the answers block
-  $('#skip-task').click(function () {window.location = 'submit-answer.php';});
+  $('#turn-on').click(function () {
+	var url = window.location.href;
+	if (url.indexOf('&on') != -1) window.location.href = url.substr(0, url.length - 3);
+	else window.location.href = url + '&on';
+  });
+  $('#skip-task').click(function () {window.location.href = 'index.php';});
   $('#submit-answer').click(function () {
     // get the necessary details
     var indices = new Array();
@@ -359,7 +365,7 @@ $(function () { //ready function
         'answers': indices
       },
       'success': function () {
-        window.location = 'submit-answer.php';
+        window.location.href = 'index.php';
       }
     });
   });
@@ -387,10 +393,101 @@ $(function () { //ready function
   }
   
   
-  
   function clickListeners() {
     $('#gi').click(function () {$('#detail-instructions').toggle();});
   }
   $('.tipsy').each(function () {$(this).tooltip();});
   clickListeners();
+  setUpFeedback();
 });
+function validateEmail(email) { 
+    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+}
+function setUpFeedback() {
+  var code = '<div class="feedback-panel">' +
+			 '<a class="feedback-tab">Feedback</a>' +
+			 '<div id="form-wrap">' + 
+			 '<form id="send-feedback">' +
+			 
+			 '<label for="email">Email</label><br>' +
+			 '<input size="35" type="text" id="email" placeholder="your email"/><br>' +
+			 
+			 '<label for="msg">Feedback</label><br>' +
+			 '<textarea id="msg" class="no-resize" name="msg" rows="15" cols="30" placeholder="your feedback"></textarea>' +
+			 
+			 '<button type="submit" class="ui-widget ui-state-default ui-corner-all">submit</button>' +
+			 '</form></div></div>';
+  $('body').append(code);
+  
+  var feedbackTab = {
+	speed: 300,
+	containerWidth: $('.feedback-panel').outerWidth(),
+	containerHeight: $('.feedback-panel').outerHeight(),
+	tabWidth: $('.feedback-tab').outerWidth(),
+
+	init: function() {
+	  $('.feedback-panel').css('height',feedbackTab.containerHeight + 'px');
+
+	  $('a.feedback-tab').click(function(event){
+
+		if ($('.feedback-panel').hasClass('open')) {
+		  $('.feedback-panel').animate({left:'-' + feedbackTab.containerWidth}, feedbackTab.speed)
+		  .removeClass('open');
+		} else {
+		  $('.feedback-panel').animate({left:'0'},  feedbackTab.speed)
+		  .addClass('open');
+		}
+		event.preventDefault();
+	  });
+	}
+  };
+ 
+  feedbackTab.init();
+ 
+  $("#send-feedback").submit(function() {
+	console.log('1');
+	var email = $("#email").val();
+	var message = $("#msg").val();
+	if (!validateEmail(email)) {
+	  $('#email').attr('placeholder', 'please enter a valid email')
+	  .val('')
+	  .addClass('error');
+	  return false;
+	} else {
+	  $('#email').removeClass('error');
+	}
+	if (!$.trim(message)) {
+	  $('#msg').attr('placeholder', 'please enter some feedback')
+	  .addClass('error');
+	  return false;
+	} else {
+	  $('#msg').removeClass('error');
+	}
+	var response_message = "Thank you for your feedback!"
+	$.ajax({
+	  url: "ajax_scripts.php",
+	  data: {
+		fid: 4,
+		email: email,
+		comment: message
+	  },
+	  success: function(data) {
+		console.log(data);
+		$('#form-wrap').html("<div id='response-message'></div>");
+		$('#response-message').html("<p>" + response_message +"</p>")
+		.hide()
+		.fadeIn(500)
+		.animate({opacity: 1.0}, 1000)
+		.fadeIn(0, function() {
+		  $('.feedback-panel')
+		  .animate({left:'-' + (feedbackTab.containerWidth + feedbackTab.tabWidth)}, 
+		  (feedbackTab.speed))
+		  .removeClass('open');
+		})
+	  }
+	});
+	return false;
+  });
+}
+

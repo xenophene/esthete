@@ -12,16 +12,15 @@ body {
   width: 100%;
 }
 .filters {
-  padding: 20px 20px 0 20px;
+  padding: 20px 20px 0 30px;
   background: #fff;
   color: #111;
-  width: 1100px;
+  width: 80%;
   /*top: 0px;*/
   /*position: fixed;*/
   /*z-index: 100;*/
 }
 .task-desc {
-  width: 900px;
   margin: 0;
 }
 .task {
@@ -46,7 +45,7 @@ body {
   position: fixed;
   top: 40px;
   right: 20px;
-  width: 200px;
+  width: 15%;
   text-align: right;
   font-weight: bold;
   overflow: auto;
@@ -94,4 +93,36 @@ ul {
 }
 .no-resize {
   resize: none;
+}
+.modal {
+  max-height: 500px;
+  overflow-y: scroll;
+}
+.feedback-panel {
+  z-index: 100;
+  padding:20px;
+  width: 300px;
+  background: #fff;
+  border: #00349C 1px solid;
+  position:fixed;
+  top:100px;
+  left:-341px;
+}
+.feedback-tab {
+  background: transparent url('feedbacktab.gif');
+  border-width: 1px 1px 1px 0;
+  display:block;
+  height:99px;
+  left:51px;
+  bottom:21px;
+  position:relative;
+  float:right;
+  text-indent:-9999px;
+  width:30px;
+  outline:none;
+  cursor: pointer;
+}
+.error {
+  color: #fff;
+  background-color: #ff0000;
 }

@@ -4,12 +4,13 @@
   <head>
     
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
-    <title>News Browsing</title>
+    <title>News Browsing Tool</title>
     <link rel="stylesheet" href="css/bootstrap.min.css"/>
     <link rel="stylesheet" href="jquery-ui-1.8.23.custom.css"/>
     <link rel="stylesheet" href="jquery.multiselect.filter.css"/>
     <link rel="stylesheet" href="jquery.multiselect.css"/>
     <link rel="stylesheet" href="survey-css.css"/>
+    <link rel="icon" href="nb.ico"/>
     
     <!--Thank you, David François Huynh!-->
     <script src="src/webapp/api/timeline-api.js?bundle=true" type="text/javascript"></script>
@@ -95,8 +96,10 @@
   $partition_events = array();
   
   if (isset($_GET['on'])) {
-    $tid = 4;
-    $period_partitions = article_periodize($articles, $ra_map);
+    
+    $cutoff = 3;
+    $tid = $cutoff + 1;
+    $period_partitions = article_periodize($articles, $ra_map, $cutoff);
     $partition_events = create_partition_events($articles, $period_partitions);
   }
   $jsobj['events'] = get_timeline_events($timeline_actors, $articles, $ra_map, $t_color_map, $tid);
@@ -125,10 +128,10 @@
       <form method="POST" id="filter-form">
         <table>
           <thead>
-            <th>Filter on actors</th>
-            <th>Filter on topics</th>
-            <th>From date</th>
-            <th>To date</th>
+            <th>Filter on the actors below</th>
+            <th>Filter on the topics below</th>
+            <th>From the date</th>
+            <th>Till the date</th>
           </thead>
           <tbody>
             <tr>
@@ -154,7 +157,6 @@
           </tbody>
         </table>
         <p class="footer">
-          <!--<form method="POST" action="submit-answer.php">-->
           <?php show_task_options($task_id, $_POST); ?>
           <?php if (isset($_POST['answer-text']) and !empty($_POST['answer-text'])) 
                   $answer = $_POST['answer-text'];
@@ -164,9 +166,9 @@
           <textarea rel="tooltip" title="Enter your answer here. Incase you find this task difficult, please enter your feedback here." name="answer-text" id="answer-text" placeholder="<?php echo $answer;?>" cols=120 rows=2 class="ui-widget ui-state-default ui-corner-all no-resize tipsy"></textarea>
         </p>
       </form>
-      <button rel="tooltip" title="Submit this answer" id="submit-answer" class="ui-widget ui-state-default ui-corner-all tipsy">submit answer</button>
-      <button rel="tooltip" title="Skip this task" id="skip-task" class="ui-widget ui-state-default ui-corner-all tipsy">skip task</button>
-          <!--</form>-->
+      <button rel="tooltip" title="Submit this answer." id="submit-answer" class="ui-widget ui-state-default ui-corner-all tipsy">submit answer</button>
+      <button rel="tooltip" title="Skip this task and go back to the survey home page." id="skip-task" class="ui-widget ui-state-default ui-corner-all tipsy">skip task</button>
+      <button rel="tooltip" title="Aggregation tries to aggregate all the articles related by one or more common actors and topics into a single block and all can be seen at the same time. They appear as black bars at the top." id="turn-on" class="ui-widget ui-state-default ui-corner-all tipsy">Toggle Aggregation Feature</button>
     </div>
     <div class="time tipsy" title="Time elapsed in this session" data-placement="left">
       Timer:

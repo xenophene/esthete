@@ -7,6 +7,7 @@
     case 1: send_article(); break;
     case 2: store_relevance(); break;
     case 3: submit_answer(); break;
+    case 4: save_feedback(); break;
     default: pass();
   } 
   
@@ -53,6 +54,13 @@
     $q = "INSERT INTO `answers` (`tid`, `answertext`, `answerchoices`, `time`) ".
          "VALUES ('$tid', '$atext', '$answers', '$time')";
     mysql_query($q);
+  }
+  
+  function save_feedback() {
+    $e = $_GET['email'];
+    $c = $_GET['comment'];
+    $query = "INSERT INTO `feedback` (`email`, `comment`) VALUES ('$e', '$c')";
+    mysql_query($query);
   }
   
   function pass() {}

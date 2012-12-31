@@ -400,8 +400,7 @@
     return $get_remaining;
   }
   
-  function article_periodize($articles, $ra_map) {
-    $cutoff = 3;
+  function article_periodize($articles, $ra_map, $cutoff) {
     $st = $articles[0]->get_start_date_ts();
     $ws = 20;
     $periods = array(array()); // partitioning of articles id
@@ -433,8 +432,6 @@
     }
     return $period_partitions;
   }
-  
-  
   // the keys have to be sorted by the length of the array it indexes
   function get_actors_by_article_count($ra_map) {
     $arr = array();
