@@ -88,6 +88,7 @@
           unset($this->uactors[$key]);
         }
       }
+      if (empty($this->uactors)) $this->set_new_uactors($fa);
     }
     
     function remove_topics($ft) {

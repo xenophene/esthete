@@ -103,22 +103,15 @@
 ?>
     <!--<div class="holder"></div> A trick to make always visible filter-->
     <div class="filters">
-      <p class="task-desc">
-        <span class="task tipsy" rel="tooltip" title="Task Question" data-placement="bottom"><?php show_task_question($task_id); ?></span><br>
-        <a id="gi" href="#" rel="tooltip" data-placement="right" class="tipsy" data-original-title="Click to read some general instructions. Click again to hide.">General Instructions</a>
-        <span class="hide" id="detail-instructions">
-        For the above task, you have to form an opinion and answer based on the relevant articles that appeared. The select boxes below are for filtering on people, topics and from-to date. A list of events that occured through the year are shown on the timeline below. A timer is kept to track this session. <em>Please avoid pressing Back, instead deselect the filters.</em>
-        </span>
-      </p>
+      <span class="task tipsy" rel="tooltip" title="Task Question" data-placement="bottom"><strong>Task Question: </strong> <?php show_task_question($task_id); ?></span>
       <form method="POST" id="filter-form">
+        <?php show_task_options($task_id, $_POST);?>
         <table>
-          <thead>
-            <th>Filter on the actors below</th>
-            <th>Filter on the topics below</th>
-            <th>From the date</th>
-            <th>Till the date</th>
-          </thead>
           <tbody>
+            <tr>
+              <td class="head">Filter on the actors below</td>
+              <td class="head">Filter on the topics below</td>
+            </tr>
             <tr>
               <td>
                 <select data-placeholder="Filter on Actors..." multiple id="actor-filter" name="fa[]">
@@ -130,49 +123,74 @@
                   <?php get_options($ft, $topics); ?>
                 </select>
               </td>
+            </tr>
+            <tr>
+              <td class="head">From the date</td>
+              <td class="head">To the date</td>
+            </tr>
+            <tr>
               <td>
                 <input type="text" id="fd" name="fd" placeholder="from ..." autocomplete="off" class="ui-widget ui-state-default ui-corner-all" value="<?php echo $fd;?>"/>
               </td>
               <td>
                 <input type="text" id="td" name="td" placeholder="till ..." autocomplete="off" class="ui-widget ui-state-default ui-corner-all" value="<?php echo $td;?>"/>
-              <input type="hidden" name="ts" id="timer-value">
-              <button rel="tooltip" title="Query for articles on the specified filter" type="submit" class="ui-widget ui-state-default ui-corner-all tipsy">query</button>
+                <input type="hidden" name="ts" id="timer-value">
+                <button rel="tooltip" title="Query for articles on the specified filter" type="submit" class="ui-widget ui-state-default ui-corner-all tipsy">query</button>
               </td>
             </tr>
           </tbody>
         </table>
+        <!--
         <p class="footer">
-          <?php show_task_options($task_id, $_POST); ?>
-          <?php if (isset($_POST['answer-text']) and !empty($_POST['answer-text'])) 
+          <?php //show_task_options($task_id, $_POST); ?>
+          <?php /*if (isset($_POST['answer-text']) and !empty($_POST['answer-text'])) 
                   $answer = $_POST['answer-text'];
                 else $answer = 
-                "Your answer...(Kindly include your name as well). If you already know the answer, please skip this task.";
+                "Your answer...(Kindly include your name as well). If you already know the answer, please skip this task.";*/
           ?>
           <textarea rel="tooltip" title="Enter your answer here. Incase you find this task difficult, please enter your feedback here." name="answer-text" id="answer-text" placeholder="<?php echo $answer;?>" cols=120 rows=2 class="ui-widget ui-state-default ui-corner-all no-resize tipsy"></textarea>
         </p>
+        -->
       </form>
-      <button rel="tooltip" title="Submit this answer." id="submit-answer" class="ui-widget ui-state-default ui-corner-all tipsy">submit answer</button>
-      <button rel="tooltip" title="Skip this task and go back to the survey home page." id="skip-task" class="ui-widget ui-state-default ui-corner-all tipsy">skip task</button>
-      <!--<button rel="tooltip" title="Aggregation tries to aggregate all the articles related by one or more common actors and topics into a single black block." id="turn-on" class="ui-widget ui-state-default ui-corner-all tipsy">toggle aggregation feature</button>-->
-      <button rel="tooltip" title="Show all articles relevant to the filtered actors and topics" id="show-all-articles" class="ui-widget ui-state-default ui-corner-all tipsy">show all articles</button>
-      <button rel="tooltip" title="Study the interaction among the filtered set of actors" id="study-interaction" class="ui-widget ui-state-default ui-corner-all tipsy">study interaction</button>
+      <a id="gi" href="#" rel="tooltip" data-placement="right" class="tipsy small" data-original-title="Click to read some general instructions. Click again to hide.">General Instructions</a>
+      <span class="hide" id="detail-instructions">
+      For the above task, you have to form an opinion and answer based on the relevant articles that appeared. Clicking on an event on the timeline below brings out the various actors and articles involved in it. The select boxes below are for filtering on people, topics and from-to date. A timer is kept to track this session. <em>Please avoid pressing Back, instead deselect the filters.</em>
+      </span>
+      
       <!--<a id="zout" class="icon-zoom-in tipsy" title="Zoom Into the Timeline"></a>
       <a id="zin" class="icon-zoom-out tipsy" title="Zoom Out From the Timeline"></a>-->
     </div>
+    
     <div class="time tipsy" title="Time elapsed in this session" data-placement="left">
       Timer:
       <span id="minutes"><?php echo $ts[0];?></span>:<span id="seconds"><?php echo $ts[1];?></span>
     </div>
+    
+    <div class="legend tipsy" id="i-graph"></div>
+    <!--
     <div rel="tooltip" class="legend tipsy" title="Select topics to go into the filter">
-      <?php show_bland_legend($timeline_topics);?>
+      <?php //show_bland_legend($timeline_topics);?>
     </div>
-    <span style="padding-left:30px;font-weight:bold;color:<?php echo BLACK;?>">Timeline events involving the filtered actors and topics:</span>
+    -->
+    <span style="padding-left:20px;font-weight:bold;color:<?php echo BLACK;?>">Timeline events around the filtered actors and topics:</span><br>
     <div id="tl"></div>
-    <?php if (sizeof($articles)): ?>
-      <span style="padding-left:30px;font-weight:bold;color:<?php echo PROMINENT;?>">Significant Event</span><br>
-    <?php else: ?>
-      <span style="padding-left:30px;font-weight:bold;"><?php  echo 'No Articles Found.';?></span>
-    <?php endif; ?>
+    <div class="row">
+      <div class="controls span2">
+        <?php if (sizeof($articles)): ?>
+          <span style="font-weight:bold;color:<?php echo PROMINENT;?>">Significant Event</span>
+        <?php else: ?>
+          <span style="font-weight:bold;"><?php  echo 'No Articles Found.';?></span>
+        <?php endif; ?>
+        <br>
+        <button rel="tooltip" data-placement="right" title="Submit this answer." id="submit-answer" class="ui-widget ui-state-default ui-corner-all tipsy">finish task</button>
+        <button rel="tooltip" data-placement="right" title="Skip this task and go back to the survey home page." id="skip-task" class="ui-widget ui-state-default ui-corner-all tipsy">skip task</button>
+        <!--<button rel="tooltip" title="Aggregation tries to aggregate all the articles related by one or more common actors and topics into a single black block." id="turn-on" class="ui-widget ui-state-default ui-corner-all tipsy">toggle aggregation feature</button>-->
+        <button rel="tooltip" data-placement="right" title="Show all articles relevant to the filtered actors and topics" id="show-all-articles" class="ui-widget ui-state-default ui-corner-all tipsy">show all articles</button>
+        <button rel="tooltip" data-placement="right" title="Study the interaction among the filtered set of actors" id="study-interaction" class="ui-widget ui-state-default ui-corner-all tipsy">study interaction</button>
+      </div>
+      <div class="span12" id="headline-key"></div>
+    </div>
+    
     <div id="modal-bubble" class="modal hide fade">
       <div class="modal-header"></div>
       <div class="modal-body"></div>

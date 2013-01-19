@@ -5,15 +5,15 @@
   function show_task_question($task_id) {
     
     $task_questions = array(
-      0 => "Describe the controversy sorrounding Pete Sampras and John McEnroe in the year 2000?",
-      1 => "For each of the points below, find an article which verifies the point made about the nature of media coverage <u>Nitin Gadkari</u> got in the year 2012. On finding the article, mark it as `Relevant`.",
-      2 => "Describe the sports rivalry between Andre Agassi and Pete Sampras in the year 2000.",
-      3 => "For each of the points below, find an article which verifies the point made about how <u>Robert Vadra</u> has been highlighted by different sections of political class. On finding the article, mark it as `Relevant`.",
-      4 => "Discuss the controversy surrounding Subodh Kant Sahay and his brother SKS Ispat." ,
-      5 => "Which all of the following hold true regarding the events involving Subramanium Swamy and P. Chidambaram in the year 2012?",
-      6 => "Describe all the recent developments related to India's space program.",
-      7 => "What were some activities Saina Nehwal was involved in besides Badminton in the year 2012 [Hint: Try topics like People/Celebrity]",
-      8 => "Find articles that capture the following facts regarding stories around rape cases in India",
+      0 => "Find and mark relevant the article which helps you to answer which of the following statements is true.",
+      1 => "Find and mark relevant articles which verify the following statements involving <strong>Nitin Gadkari</strong>.",
+      2 => "Find and mark relevant articles which talk of the sports rivalry between Andre Agassi and Pete Sampras.",
+      3 => "Find and mark relevant articles which bring out the following facts about news featuring <strong>Robert Vadra</strong>",
+      4 => "Find and mark relevant articles which bring out the controversy sorrounding Subodh Kant Sahay and his brother SKS Ispat." ,
+      5 => "Find and mark relevant articles which bring out the following facts regarding S. Swamy and P. Chidambaram.",
+      6 => "Find and mark relevant articles for each of the following facts regarding recent developments in India's space program.",
+      7 => "Find and mark relevant articles which bring out the following events involving Saina Nehwal last year.",
+      8 => "Find and mark articles that capture the following facts regarding stories around rape cases in India",
       9 => "Find articles which portray how different sections of society have reacted to the frequent petrol price hikes in the past"
     );
     echo $task_questions[$task_id];
@@ -76,6 +76,9 @@
     );
 
     $questions = $task_options[$task_id];
+    echo '<ul><li>' . implode($questions, '</li><li>') . '</li></ul>';
+    /*
+    $resp = '';
     if (isset($d['answer-options'])) $options = $d['answer-options'];
     else $options = array();
     $resp = '';
@@ -87,6 +90,7 @@
       $i++;
     }
     echo $resp;
+    */
   }
   $task_start_date = array(
     0 => '2000-01-01',

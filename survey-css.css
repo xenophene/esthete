@@ -1,7 +1,7 @@
 body {
   margin: 0;
   padding: 0;
-  font: normal .85em/1.5em Arial, Helvetica, sans-serif;
+  font: normal .85em/1.5em "Helvetica Neue",Arial, Helvetica, sans-serif;
 }
 #tl {
   margin: 10px 0 0 0;
@@ -12,21 +12,23 @@ body {
   width: 100%;
 }
 .filters {
-  padding: 20px 20px 0 30px;
+  padding: 10px 0px 0 20px;
   background: #fff;
   color: #111;
-  width: 80%;
+  width: 60%;
+  max-width: 800px;
   /*top: 0px;*/
   /*position: fixed;*/
   /*z-index: 100;*/
 }
-.task-desc {
-  margin: 0;
+form>ul {
+  font-size: 13px;
+  margin: 0 0 10px 10px;
 }
 .task {
-  font-size: 20px;
-  font-weight: bold;
+  font-size: 15px;
 }
+
 .footer {
   font-size: 14px;
   margin: 0px;
@@ -35,9 +37,9 @@ body {
 .time {
   position: fixed;
   font-weight: bold;
-  top: 20px;
+  top: 10px;
   right: 20px;
-  font-size: 15px;
+  font-size: 16px;
   z-index: 100;
   background: #fff;
 }
@@ -45,11 +47,12 @@ body {
   position: fixed;
   top: 40px;
   right: 20px;
-  max-width: 12%;
+  min-width: 450px;
+  max-width: 500px;
   text-align: right;
   font-weight: bold;
-  overflow: auto;
-  height: 200px;
+  overflow: hidden;
+  height: 220px;
   z-index: 50;
 }
 .legend:hover {
@@ -87,6 +90,12 @@ ul {
 }
 #filter-form table {
   background: #f9f9f9;
+  max-width: 800px;
+  min-width: 600px;
+}
+#filter-form td.head {
+  font-size: 12px;
+  font-weight: bold;
 }
 #filter-form thead {
   font-size: 11px;
@@ -111,7 +120,7 @@ ul {
   background: #fff;
   border: #00349C 1px solid;
   position:fixed;
-  top:100px;
+  bottom:0px;
   left:-341px;
 }
 .feedback-tab {
@@ -120,7 +129,7 @@ ul {
   display:block;
   height:99px;
   left:51px;
-  bottom:21px;
+  top:260px;
   position:relative;
   float:right;
   text-indent:-9999px;
@@ -167,4 +176,14 @@ text.active {
 }
 text {
   font: 10px sans-serif;
+}
+.controls {
+  padding: 0 0 0 20px;
+}
+.small {
+  font-size: 13px;
+}
+.grey {
+  color: #555;
+  font-size: 12px;
 }

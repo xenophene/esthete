@@ -126,8 +126,8 @@ $(function () { //ready function
     numberOfMonths: 1,
     beforeShow: function(input, inst) {
       inst.dpDiv.css({
-        marginTop: (-input.offsetHeight - 50) + 'px', 
-        marginLeft: (-input.offsetWidth - 70) + 'px',
+        marginTop: (-input.offsetHeight - 170) + 'px', 
+        marginLeft: (-input.offsetWidth + 280) + 'px',
         'font-size': '14px'
       });
     },
@@ -292,68 +292,68 @@ $(function () { //ready function
   }
 	// iterate through desc[0] and put the actor as name, size where size is number of occurences in desc[2]
   function successD3BubblePlot(data) {
-	$('.loading').remove();
-	var actors = [],
-		len = 0,
-		threshold = 10;
-	actors['name'] = 'actors';
-	actors['children'] = [];
-	var actor_counts = [];
-	for (k in data) {
-	  data[k][0].split(',').map(function(str) {
-		if (actor_counts[str]) actor_counts[str]++;
-		else actor_counts[str] = 1;
-	  });
-	}
-	var values = [];
-	for (k in actor_counts) {
-	  values.push(actor_counts[k]);
-	}
-	values = values.sort().reverse();
-	var lim = values.length > threshold ? values[threshold - 1] : values[values.length - 1];
-	for (k in actor_counts) {
-	  var elm = [];
-	  if (actor_counts[k] < lim) continue;
-	  if (actor_counts[k] == lim && actors['children'].length >= threshold) continue;
-	  elm['name'] = k;
-	  elm['size'] = actor_counts[k];
-	  actors['children'].push(elm);
-	  len++;
-	}
-	var diameter = len * 100 > 300 ? 300 : len * 100,
-    format = d3.format(",d"),
-    color = d3.scale.category20c();
-
-	var bubble = d3.layout.pack()
-		.sort(null)
-		.size([diameter, diameter])
-		.padding(1.2);
+		$('.loading').remove();
+		var actors = [],
+				len = 0,
+				threshold = 10;
+		actors['name'] = 'actors';
+		actors['children'] = [];
+		var actor_counts = [];
+		for (k in data) {
+			data[k][0].split(',').map(function(str) {
+			if (actor_counts[str]) actor_counts[str]++;
+			else actor_counts[str] = 1;
+			});
+		}
+		var values = [];
+		for (k in actor_counts) {
+			values.push(actor_counts[k]);
+		}
+		values = values.sort().reverse();
+		var lim = values.length > threshold ? values[threshold - 1] : values[values.length - 1];
+		for (k in actor_counts) {
+			var elm = [];
+			if (actor_counts[k] < lim) continue;
+			if (actor_counts[k] == lim && actors['children'].length >= threshold) continue;
+			elm['name'] = k;
+			elm['size'] = actor_counts[k];
+			actors['children'].push(elm);
+			len++;
+		}
+		var diameter = len * 100 > 300 ? 300 : len * 100,
+			format = d3.format(",d"),
+			color = d3.scale.category20c();
 	
-	var svg = d3.select("#i-a").append("svg")
-		.attr("width", diameter)
-		.attr("height", diameter)
-		.style("left", "40px")
-		.attr("class", "bubble");
-	
-	root = actors;
-	var node = svg.selectAll(".node")
-		.data(bubble.nodes(classes(root))
-		.filter(function(d) { return !d.children; }))
-	  .enter().append("g")
-		.attr("class", "node")
-		.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
-  
-	node.append("title")
-		.text(function(d) { return d.className + ": " + format(d.value); });
-  
-	node.append("circle")
-		.attr("r", function(d) { return d.r; })
-		.style("fill", function(d) { return color(d.packageName); });
-  
-	node.append("text")
-		.attr("dy", ".3em")
-		.style("text-anchor", "middle")
-		.text(function(d) { return d.className.substring(0, d.r / 3); });
+		var bubble = d3.layout.pack()
+			.sort(null)
+			.size([diameter, diameter])
+			.padding(1.2);
+		
+		var svg = d3.select("#i-a").append("svg")
+			.attr("width", diameter)
+			.attr("height", diameter)
+			.style("left", "40px")
+			.attr("class", "bubble");
+		
+		root = actors;
+		var node = svg.selectAll(".node")
+			.data(bubble.nodes(classes(root))
+			.filter(function(d) { return !d.children; }))
+			.enter().append("g")
+			.attr("class", "node")
+			.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+		
+		node.append("title")
+			.text(function(d) { return d.className + ": " + format(d.value); });
+		
+		node.append("circle")
+			.attr("r", function(d) { return d.r; })
+			.style("fill", function(d) { return color(d.packageName); });
+		
+		node.append("text")
+			.attr("dy", ".3em")
+			.style("text-anchor", "middle")
+			.text(function(d) { return d.className.substring(0, d.r / 3); });
 
   }
   function classes(root) {
@@ -368,26 +368,26 @@ $(function () { //ready function
 	return {children: classes};
   }
   function showArticleList(evt) {
-	var desc = evt._description.split('|');
-    var sdate = parseDate(evt._start.toString());
-    var edate = parseDate(evt._end.toString());
-    var date = sdate.getDate() + ' ' + monthNames[sdate.getMonth()];
-    date += ' - ' + edate.getDate() + ' ' + monthNames[edate.getMonth()];
-    var headercode = '';
-	
-	if (desc[1] == '') {
-	  var gtopics = [];
-	  $('#topic-filter option:selected').each(function() {gtopics.push($(this).val())});
-	  desc[1] = gtopics.join('^');
-	}
-	if (desc[0] == '') {
-	  var gactors = [];
-	  $('#actor-filter option:selected').each(function() {gactors.push($(this).val())});
-	  desc[0] = gactors.join('^');
-	}
+		var desc = evt._description.split('|');
+			var sdate = parseDate(evt._start.toString());
+			var edate = parseDate(evt._end.toString());
+			var date = sdate.getDate() + ' ' + monthNames[sdate.getMonth()];
+			date += ' - ' + edate.getDate() + ' ' + monthNames[edate.getMonth()];
+			var headercode = '';
+		
+		if (desc[1] == '') {
+			var gtopics = [];
+			$('#topic-filter option:selected').each(function() {gtopics.push($(this).val())});
+			desc[1] = gtopics.join('^');
+		}
+		if (desc[0] == '') {
+			var gactors = [];
+			$('#actor-filter option:selected').each(function() {gactors.push($(this).val())});
+			desc[0] = gactors.join('^');
+		}
     headercode += '<strong><u>Sub-Actors</u></strong>: ' + desc[0].split('^').map(toTitleCase).join(', ');
-	headercode += '<br><strong><u>Sub-Topics</u></strong>: ' + desc[1].split('^').map(toTitleCase).join(', ');
-	var headlines = '<em>Articles relevant to this theme (Click to read full):</em><ol>';
+		headercode += '<br><strong><u>Sub-Topics</u></strong>: ' + desc[1].split('^').map(toTitleCase).join(', ');
+		var headlines = '<em>Articles relevant to this theme (Click to read full):</em><ol>';
 	
     var descs = desc[2].toString();
     descs = descs.split('^');
@@ -399,7 +399,7 @@ $(function () { //ready function
     }
     headlines += '</ol>';
 	
-	$('#r-a').html(headlines);
+		$('#r-a').html(headlines);
     $('.add-actor').click(function () {
       var e = $("#actor-filter option[value='"+$.trim($(this).attr('id'))+"']");
       if (e.attr("selected") == "selected") {
@@ -416,71 +416,143 @@ $(function () { //ready function
   
   
   $('#study-interaction').click(function() {
-	if (!google.visualization) return;
-	var tabs = '<div class="tabbable"><ul id="interaction-tabs" class="nav nav-tabs">';
-	tabs += '<li class="active"><a href="#t1">Interaction Strength</a></li> \
-			 <li><a href="#t2">Topic Hierarchy</a></li></ul>';
-	
-	
-	tabs += '<div class="tab-content"> \
-			 <div class="tab-pane active" id="t1"><div id="i-s">' + getLoadingImg() + '</div></div> \
-			 <div class="tab-pane" id="t2"><div id="t-h"></div></div> \
-			 </div></div>';
-	
-	showModal('<h3>Interactions</h3>', tabs);
-	
-	$('#interaction-tabs a').click(function(e) {
-	  e.preventDefault();
-	  $(this).tab('show');
-	});
-	
-    // plot the appropriate charts
-	
-	if (!saveReply) {
-	  var aids = Object.keys(article_identifier);
-		if (aids.length >= 500) {
-			var aids1 = aids.slice(0, 500);
-			var aids2 = aids.slice(500, aids.length);
-			$.ajax({
+		if (!google.visualization) return;
+		var tabs = '<div class="tabbable"><ul id="interaction-tabs" class="nav nav-tabs">';
+		tabs += '<li class="active"><a href="#t1">Interaction Strength</a></li> \
+				 <li><a href="#t2">Topic Hierarchy</a></li></ul>';
+		
+		
+		tabs += '<div class="tab-content"> \
+				 <div class="tab-pane active" id="t1"><div id="i-s">' + getLoadingImg() + '</div></div> \
+				 <div class="tab-pane" id="t2"><div id="t-h"></div></div> \
+				 </div></div>';
+		
+		showModal('<h3>Interactions</h3>', tabs);
+		
+		$('#interaction-tabs a').click(function(e) {
+			e.preventDefault();
+			$(this).tab('show');
+		});
+		
+		// plot the appropriate charts
+		
+		getDataAndPlot(plotCharts);
+  });
+	function getDataAndPlot(fp) {
+		if (!saveReply) {
+			var aids = Object.keys(article_identifier);
+			if (aids.length >= 500) {
+				var aids1 = aids.slice(0, 500);
+				var aids2 = aids.slice(500, aids.length);
+				$.ajax({
+					url: 'ajax_scripts.php',
+					method: 'GET',
+					dataType: 'json',
+					data: {
+						'fid': '5',
+						'aids': aids1,
+						'tid': task_id
+					},
+					success: function (reply1) {
+						$.ajax({
+							url: 'ajax_scripts.php',
+							method: 'GET',
+							dataType: 'json',
+							data: {
+								'fid': '5',
+								'aids': aids2,
+								'tid': task_id
+							},
+							success: function(reply2) {
+								fp($.extend(reply1, reply2));
+							}
+						});
+					}
+				});
+			} else {
+				$.ajax({
 				url: 'ajax_scripts.php',
 				method: 'GET',
 				dataType: 'json',
 				data: {
 					'fid': '5',
-					'aids': aids1,
+					'aids': aids,
 					'tid': task_id
 				},
-				success: function (reply1) {
-					$.ajax({
-						url: 'ajax_scripts.php',
-						method: 'GET',
-						dataType: 'json',
-						data: {
-							'fid': '5',
-							'aids': aids2,
-							'tid': task_id
-						},
-						success: function(reply2) {
-							plotCharts($.extend(reply1, reply2));
-						}
-					});
-				}
-			});
-		} else {
-			$.ajax({
-			url: 'ajax_scripts.php',
-			method: 'GET',
-			dataType: 'json',
-			data: {
-				'fid': '5',
-				'aids': aids,
-				'tid': task_id
-			},
-			success: plotCharts
-			});
+				success: fp
+				});
+			}
+		} else fp(saveReply);
+	}
+	function plotAsLegend(reply) {
+		saveReply = reply;
+		if (reply.length) var year = reply[0][2].split('-')[0];
+		var monthBins = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+			, sortMonthBins = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+			, monthTopics = []
+			,	monthAids = [];
+		console.log(reply);
+		for (k in reply) {
+			var amonth = parseInt(reply[k][2].split('-')[1], 10) - 1;
+			monthBins[amonth]++;
+			if (monthAids[amonth]) monthAids[amonth].push(k);
+			else monthAids[amonth] = [k];
+			sortMonthBins[amonth]++;
+			var topics = reply[k][0].split(';');
+			if (!monthTopics[amonth])	monthTopics[amonth] = [];
+			for (var i = 0; i < topics.length; i++) {
+				var topic = topics[i];
+				if (!monthTopics[amonth][topic]) monthTopics[amonth][topic] = 1;
+				else monthTopics[amonth][topic]++;
+			}
 		}
-	} else plotCharts(saveReply);
-  });
+		sortMonthBins = sortMonthBins.sort(function(a,b){return b - a;});
+		var dataTable = new google.visualization.DataTable();
+		dataTable.addColumn('string', 'Month');
+		dataTable.addColumn('number', 'Article Count');
+		dataTable.addColumn({type: 'string', role: 'tooltip'});
+		dataTable.addColumn({type: 'string', role: 'annotation'});
+		var key = 'A';
+		var keyMonth = {};
+		var is_data = [];
+		for (m in monthBins) {
+			var tooltip = monthTopics[m] ? assoc_array_sort(monthTopics[m]).join(', ') : '';
+			var annoText = '';
+			if (monthBins[m] >= sortMonthBins[5] && monthBins[m]) {
+				annoText = key;
+				keyMonth[key] = m;
+				key = String.fromCharCode(key.charCodeAt() + 1);
+			}
+			is_data.push([monthNames[m], monthBins[m], tooltip, annoText]);
+		}
+		var code = '';
+		for (k in keyMonth) {
+			var headlines = [];
+			monthAids[keyMonth[k]].slice(0, 2).map(function(v) {
+				headlines.push('<u>' + $.trim(article_identifier[v]) + '</u>')
+			});
+			var others;
+			if (monthAids[keyMonth[k]].length <= 2) {
+				others = '';
+			} else if (monthAids[keyMonth[k]].length == 3) {
+				others = '<span class="grey"> and 1 other</span>';
+			} else {
+				others = '<span class="grey"> and ' + (monthAids[keyMonth[k]].length - 2) + ' others</span>';
+			}
+			console.log(others);
+			code += k + '. ' + headlines.join(', ') + others + '<br>';
+		}
+		$('#headline-key').html(code);
+		dataTable.addRows(is_data);
+		var options = {
+			'title': 'Interaction Influence over time'
+		};
+		// Instantiate and draw our chart, passing in some options.
+		var chart = new google.visualization.LineChart(document.getElementById('i-graph'));
+		chart.draw(dataTable, options);
+		console.log(keyMonth);
+	}
+	
   function assoc_array_sort(obj) {
 		var tuples = [];
 		for (var key in obj) tuples.push([key, obj[key]]);
@@ -511,9 +583,9 @@ $(function () { //ready function
 			var topics = reply[k][0].split(';');
 			if (!monthTopics[amonth])	monthTopics[amonth] = [];
 			for (var i = 0; i < topics.length; i++) {
-			var topic = topics[i];
-			if (!monthTopics[amonth][topic]) monthTopics[amonth][topic] = 1;
-			else monthTopics[amonth][topic]++;
+				var topic = topics[i];
+				if (!monthTopics[amonth][topic]) monthTopics[amonth][topic] = 1;
+				else monthTopics[amonth][topic]++;
 			}
 		}
 		var dataTable = new google.visualization.DataTable();
@@ -538,9 +610,9 @@ $(function () { //ready function
 			if (!count_array[k]) count_array[k] = 1;
 			else count_array[k]++;
 			for (var l in levels[k]) {
-			var lkey = levels[k][l];
-			if (!count_array[lkey]) count_array[lkey] = 1;
-			else count_array[lkey]++;
+				var lkey = levels[k][l];
+				if (!count_array[lkey]) count_array[lkey] = 1;
+				else count_array[lkey]++;
 			}
 		}
 		level1 = [];
@@ -565,52 +637,50 @@ $(function () { //ready function
 		
 		var headlines = '<ol>';
 		for (var ai in article_identifier) {
-				headlines += '<li rel="tooltip" class="evt-call" \
+			headlines += '<li rel="tooltip" class="evt-call" \
 											name="' + ai + '"><a title="Click to read this article">' +
 											article_identifier[ai] + '</a></li>';
-			}
+		}
 		headlines += '</ol>';
 		showModal(headercode, headlines);
 		$('.evt-call').each(function () {$(this).children('a').tooltip();});
-			$('.evt-call').click(showArticles);
-		
+		$('.evt-call').click(showArticles);
   });
   function showArticles() {
 		var id = $(this).attr('name');
 		if (!$(this).attr('called')) {
 			$(this).append(getLoadingImg());
 			$.ajax({
-			'url': 'ajax_scripts.php',
-			'method': 'GET',
-			'data': {
-				'fid': '1',
-				'aid': id,
-				'task_id': task_id
-			},
-			'success': function (data) {
-				$('.loading').remove();
-				data = $.parseJSON(data);
-				var elm = $('.evt-call[name="' + data[0] + '"]');
-				elm.children('a').css('font-weight', 'bold');
-				// use markers
-				var markers = '<ul class="use-marker">\
-				<li rel="tooltip" title="Mark article as relevant">Relevant Article</li>\
-				<li rel="tooltip" title="Mark article as irrelevant">Irrelevant Article</li>\
-				</ul>';
-				elm.append(markers);
-				$('.use-marker li').each(function() {$(this).tooltip();});
-				$('.use-marker li').click(sendRelevance);
-				if (data[2]) {
-				elm.append('<strong>' + data[3] + '</strong><br><i>' + data[2] + '</i>');
-				} else {
-				elm.append('<strong>' + data[3] + '</strong>');
+				'url': 'ajax_scripts.php',
+				'method': 'GET',
+				'data': {
+					'fid': '1',
+					'aid': id,
+					'task_id': task_id
+				},
+				'success': function (data) {
+					$('.loading').remove();
+					data = $.parseJSON(data);
+					var elm = $('.evt-call[name="' + data[0] + '"]');
+					elm.children('a').css('font-weight', 'bold');
+					// use markers
+					var markers = '<ul class="use-marker">\
+					<li rel="tooltip" title="Mark article as relevant">Relevant Article</li>\
+					<li rel="tooltip" title="Mark article as irrelevant">Irrelevant Article</li>\
+					</ul>';
+					elm.append(markers);
+					$('.use-marker li').each(function() {$(this).tooltip();});
+					$('.use-marker li').click(sendRelevance);
+					if (data[2]) {
+						elm.append('<strong>' + data[3] + '</strong><br><i>' + data[2] + '</i>');
+					} else {
+						elm.append('<strong>' + data[3] + '</strong>');
+					}
+					elm.append('<p>' + data[1] + '</p>');
 				}
-				elm.append('<p>' + data[1] + '</p>');
-			}
 			});
 			$(this).attr('called', 'called');
 		} else {
-			
 			$(this).children('a').css('font-weight', '');
 			$(this).removeAttr('called');
 			$(this).html('<a title="Click to read this article">' + $(this).children('a').html() + '</a>');
@@ -665,7 +735,7 @@ $(function () { //ready function
     });
   });
   
-  
+  getDataAndPlot(plotAsLegend);
   $(window).scroll(function () {
 		currScroll = $(window).scrollTop();
     var p = $('#tl').offset().top;
@@ -699,101 +769,98 @@ $(function () { //ready function
   setUpFeedback();
   
   $('.timeline-band-inner').click(function() {
-	$(window).scrollTop(currScroll);
-  });
+		$(window).scrollTop(currScroll);
+	});
   $('.timeline-band-layer-inner').click(function() {
-	$(window).scrollTop($(window).scrollTop());
+		$(window).scrollTop($(window).scrollTop());
   });
   $('.timeline-event-tape').css('top', function(i, v) {
     return (parseFloat(v) + 20) + 'px';
   });
 });
+
 function validateEmail(email) { 
-    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(email);
+  var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(email);
 }
 
 function setUpFeedback() {
-  var code = '<div class="feedback-panel">' +
-			 '<a class="feedback-tab">Feedback</a>' +
-			 '<div id="form-wrap">' + 
-			 '<form id="send-feedback">' +
-			 
-			 '<label for="email">Email</label><br>' +
-			 '<input class="ui-widget ui-corner-all" type="email" id="email" placeholder="your email"/><br>' +
-			 
-			 '<label for="msg">Feedback</label><br>' +
-			 '<textarea id="msg" class="no-resize ui-widget ui-corner-all" name="msg" rows="12" cols="30" placeholder="your feedback"></textarea>' +
-			 
-			 '<button type="submit" class="ui-widget ui-state-default ui-corner-all">submit</button>' +
-			 '</form></div></div>';
-  $('body').append(code);
+  var code = '<div class="feedback-panel"> \
+			 <a class="feedback-tab">Feedback</a>\
+			 <div id="form-wrap">\
+			 <form id="send-feedback">\
+			 <label for="email">Email</label><br>\
+			 <input class="ui-widget ui-corner-all" type="email" id="email" placeholder="your email"/><br>\
+			 <label for="msg">Feedback</label><br>\
+			 <textarea id="msg" class="no-resize ui-widget ui-corner-all" name="msg" rows="12" cols="30" placeholder="your feedback"></textarea>\
+			 <button type="submit" class="ui-widget ui-state-default ui-corner-all">submit</button>\
+			 </form></div></div>';
+  
+	$('body').append(code);
   
   var feedbackTab = {
-	speed: 300,
-	containerWidth: $('.feedback-panel').outerWidth(),
-	containerHeight: $('.feedback-panel').outerHeight(),
-	tabWidth: $('.feedback-tab').outerWidth(),
-
-	init: function() {
-	  $('.feedback-panel').css('height',feedbackTab.containerHeight + 'px');
-
-	  $('a.feedback-tab').click(function(event){
-
-		if ($('.feedback-panel').hasClass('open')) {
-		  $('.feedback-panel').animate({left:'-' + feedbackTab.containerWidth}, feedbackTab.speed)
-		  .removeClass('open');
-		} else {
-		  $('.feedback-panel').animate({left:'0'},  feedbackTab.speed)
-		  .addClass('open');
+		speed: 300,
+		containerWidth: $('.feedback-panel').outerWidth(),
+		containerHeight: $('.feedback-panel').outerHeight(),
+		tabWidth: $('.feedback-tab').outerWidth(),
+	
+		init: function() {
+			$('.feedback-panel').css('height',feedbackTab.containerHeight + 'px');
+			$('a.feedback-tab').click(function(event){
+				if ($('.feedback-panel').hasClass('open')) {
+					$('.feedback-panel').animate({left:'-' + feedbackTab.containerWidth}, feedbackTab.speed)
+					.removeClass('open');
+				} else {
+					$('.feedback-panel').animate({left:'0'},  feedbackTab.speed)
+					.addClass('open');
+				}
+				event.preventDefault();
+			});
 		}
-		event.preventDefault();
-	  });
-	}
   };
  
   feedbackTab.init();
  
   $("#send-feedback").submit(function() {
-	var email = $.trim($("#email").val());
-	var message = $.trim($("#msg").val());
-	if (!validateEmail(email)) {
-	  $('#email').attr('placeholder', 'please enter a valid email')
-	  .val('')
-	  .addClass('error');
-	  return false;
-	} else {
-	  $('#email').removeClass('error');
-	}
-	if (!message) {
-	  $('#msg').attr('placeholder', 'please enter some feedback')
-	  .addClass('error');
-	  return false;
-	} else {
-	  $('#msg').removeClass('error');
-	}
-	var response_message = "Thank you for your feedback!"
-	$.ajax({
-	  url: "ajax_scripts.php",
-	  data: {
-		fid: 4,
-		email: email,
-		comment: message
-	  },
-	  success: function(data) {
-		//$('#form-wrap').html("<div id='response-message'></div>");
-		//$('#response-message').html("<p>" + response_message +"</p>")
-		$('#email').val('');
-		$('#msg').val('');
-		$('#form-wrap')
-		.fadeIn(0, function() {
-		  $('.feedback-panel')
-		  .animate({left:'-' + feedbackTab.containerWidth}, feedbackTab.speed)
-		})
-		.removeClass('open');
-	  }
-	});
-	return false;
+		var email = $.trim($("#email").val());
+		var message = $.trim($("#msg").val());
+		if (!validateEmail(email)) {
+			$('#email').attr('placeholder', 'please enter a valid email')
+			.val('')
+			.addClass('error');
+			return false;
+		} else {
+			$('#email').removeClass('error');
+		}
+		if (!message) {
+			$('#msg').attr('placeholder', 'please enter some feedback')
+			.addClass('error');
+			return false;
+		} else {
+			$('#msg').removeClass('error');
+		}
+		var response_message = "Thank you for your feedback!"
+		$.ajax({
+			url: "ajax_scripts.php",
+			data: {
+			fid: 4,
+			email: email,
+			comment: message
+			},
+			success: function(data) {
+				//$('#form-wrap').html("<div id='response-message'></div>");
+				//$('#response-message').html("<p>" + response_message +"</p>")
+				$('#email').val('');
+				$('#msg').val('');
+				$('#form-wrap')
+				.fadeIn(0, function() {
+					$('.feedback-panel')
+					.animate({left:'-' + feedbackTab.containerWidth}, feedbackTab.speed)
+				})
+				.removeClass('open');
+			}
+		});
+		return false;
   });
 }
 google.load('visualization', '1.0', {'packages':['corechart']});
