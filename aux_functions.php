@@ -2,11 +2,24 @@
   define ('DAY', 60 * 60 * 24);
   define ('BLAND', 'rgba(0,0,0,0.1)');
   define ('BLACK', 'rgb(0,0,0)');
+  define ('DULL', 'rgba(0,0,0,0.5)');
+  define ('PROMINENT', 'rgb(88, 160, 220)');
   define ('br', '<br>');
   define ('DESCRIPTION_DELIMITER', '|');
   define ('DELIMITER', '^');
   define ('ARTICLE_ID', '#');
   require_once 'Article.php';
+  function add_slash($matches) {
+    $m = array();
+    $m['u002e'] = '.';
+    $m['u002f'] = '/';
+    $m['u002d'] = '-';
+    $m['u002c'] = ',';
+    $m['u0029'] = ')';
+    $m['u0028'] = '(';
+    $m['u0027'] = "'";
+    return $m[$matches[0]];
+  }
   // is array subarr contained in arr, assuming both are already sorted
   function is_contained($subarr, $arr) {
     if (sizeof($subarr) > sizeof($arr)) return false;
@@ -23,7 +36,7 @@
     if ($i == sizeof($arr)) return false;
     return true;
   }
-  function get_not_contained($map) {
+  function get_containers($map) {
     $not_contained = array();
     $containers = array();
     foreach ($map as $k => $v) {
@@ -41,10 +54,28 @@
         }
       }
     }
+    // $containers is the array of all topics which contain some other topics
+    // we can level-ise this array in terms of level 1, level 2
     if (empty($containers)) {
       return $map;
     }
     return $containers;
+  }
+  function get_first_level($containers) {
+    $count_array = array(); // array of counts of all topics
+    foreach ($containers as $container => $contained_topics) {
+      if (isset($count_array[$container])) $count_array[$container]++;
+      else $count_array[$container] = 1;
+      foreach ($contained_topics as $contained_topic) {
+        if (isset($count_array[$contained_topic])) $count_array[$contained_topic]++;
+        else $count_array[$contained_topic] = 1;  
+      }
+    }
+    $level1 = array();
+    foreach ($count_array as $k => $v) {
+      if ($v == 1 and isset($containers[$k])) $level1[$k] = array();
+    }
+    return $level1;
   }
   function intersect($arr1, $arr2) {  //assumes arr1 & arr2 are SORTED
     $inter = array();
@@ -158,7 +189,7 @@
       $article = $articles[$i];
       $uactors = $article->get_uactors();
       foreach ($uactors as $uactor) {
-        if (array_key_exists($uactor, $ra_map)) array_push($ra_map[$uactor], $i);
+        if (isset($ra_map[$uactor])) array_push($ra_map[$uactor], $i);
         else $ra_map[$uactor] = array($i);
       }
     }
@@ -169,10 +200,7 @@
     for ($i = 0; $i < sizeof($articles); $i++) {
       $article = $articles[$i];
       $utopics = $article->get_utopics();
-      $done = array();
       foreach ($utopics as $utopic) {
-        if (isset($done[$utopic])) continue;
-        else $done[$utopic] = true;
         if (array_key_exists($utopic, $rt_map)) array_push($rt_map[$utopic], $i);
         else $rt_map[$utopic] = array($i);
       }
@@ -187,7 +215,7 @@
     return 'rgb(' . $rgb . ')';
   }
   function assign_colors($arr) {
-    $step = ceil(360 / sizeof($arr) + 1);
+    $step = ceil(360 / (sizeof($arr) + 1));
     $colors = array();
     $hue = 0;
     foreach ($arr as $val) {
@@ -202,7 +230,13 @@
     $topics = $article->get_utopics();
     return '';
   }
-  
+  function show_bland_legend($timeline_topics) {
+    echo '<ul>';
+    foreach ($timeline_topics as $topic) {
+      echo '<li class="topic-include"><span>' . ucwords($topic) . '</span></li>';
+    }
+    echo '</ul>';
+  }
   function show_legend($t_color_map) {
     echo '<ul>';
     foreach ($t_color_map as $t => $color) {
@@ -239,7 +273,8 @@
   function get_headlines($articles, $raids) {
     $h = array();
     foreach ($raids as $raid) {
-      array_push($h, $articles[$raid]->get_headline() . '#' . $articles[$raid]->get_id());
+      //array_push($h, $articles[$raid]->get_headline() . '#' . $articles[$raid]->get_id());
+      array_push($h, $articles[$raid]->get_id());
     }
     return implode('^', $h);
   }
@@ -313,31 +348,121 @@
     $elems = gap_fill($elems, $tid);
     return $elems;
   }
-  
-  function create_partition_events($articles, $period_partitions) {
+  /*
+   * Stitched partition events are created by taking each partition and seeing
+   * whether a past event shared the head, in which case we will simply extend
+   * that event and append the articles on it
+   * We will also do some thresholding for a binary classification of an event
+   * as IMPORTANT or NOT.
+  */
+  function create_stitched_partitions($articles, $period_partitions) {
+    if (empty($period_partitions)) return;
     $elems = array();
+    $min_day_gap = 10;
+    $look_behind = 60; /* look behind 3 periods */
+    $stitched_period_partitions = array();
+    $head_mapping = array(); /* hash map of the actor to pid */
+    $pid = 0;
     foreach ($period_partitions as $partitions) {
-      // each partition becomes an event
+      $part_id = 0;
+      foreach ($partitions as $partition) {
+        $t = array($pid, $part_id);
+        if (isset($head_mapping[$partition[0]])) {
+          array_push($head_mapping[$partition[0]], $t);
+        } else {
+          $head_mapping[$partition[0]] = array($t);
+        }
+        $part_id++;
+      }
+      $pid++;
+    }
+    foreach ($head_mapping as $head => $periods) {
+      $i = 0;
+      while ($i < sizeof($periods)) {
+        $start_period = $periods[$i];
+        $aids = array_values($period_partitions[$start_period[0]][$start_period[1]][1]);
+        $sd = $articles[$aids[0]]->get_start_date_ts();
+        $i++;
+        while ($i < sizeof($periods)) {
+          $paids = array_values($period_partitions[$periods[$i][0]][$periods[$i][1]][1]);
+          if ($articles[$paids[0]]->days_since($sd) < $look_behind) {
+            $period_partitions[$start_period[0]][$start_period[1]][1] =
+                    array_merge($period_partitions[$start_period[0]][$start_period[1]][1],
+                                $period_partitions[$periods[$i][0]][$periods[$i][1]][1]);
+                    unset($period_partitions[$periods[$i][0]][$periods[$i][1]]);
+          } else {
+            $start_period = $periods[$i];
+          }
+          $i++;
+        }
+      }
+    }
+    return $period_partitions;
+  }
+  function create_stitched_partition_events($articles, $period_partitions) {
+    $elems = array();
+    $min_day_gap = 10;
+    if (empty($period_partitions)) return;
+    foreach ($period_partitions as $partitions) {
       $i = 1;
-      
-      for ($j = sizeof($partitions) - 1; $j >= 0; $j--) {
-        $partition = $partitions[$j];
+      // each partition becomes an event
+      foreach (array_reverse($partitions) as $partition) {
+        $head = $partition[0];
         $article_ids = array_values($partition[1]);
         $startaid = $article_ids[0];
         $endaid = end($article_ids);
+        $st = $articles[$startaid]->get_start_date_ts();
+        $et = $articles[$endaid]->get_start_date_ts();
+        $ed = ($et - $st < $min_day_gap) ?
+                                $articles[$endaid]->get_farther_end_date($min_day_gap) :
+                                $articles[$endaid]->get_end_date();
+        $all_actors = get_all_actors($articles, $article_ids);
+        $all_topics = get_all_topics($articles, $article_ids);
+        $h = get_headlines($articles, $article_ids);
+        $h = $all_actors . '|' . $all_topics . '|' . $h;
+        $c = sizeof($article_ids) >= 3 ? PROMINENT : DULL;
+        $elem = array(
+          'title'       =>  '',
+          'description' =>  $h,
+          'textColor'   =>  BLACK,
+          'start'       =>  $articles[$startaid]->get_start_date(),
+          'end'         =>  $ed,
+          'color'       =>  $c
+        );
+        array_push($elems, $elem);
+        $i++;
+      }
+    }
+    return $elems;
+  }
+  function create_partition_events($articles, $period_partitions) {
+    $elems = array();
+    $min_day_gap = 10;
+    foreach ($period_partitions as $partitions) {
+      // each partition becomes an event
+      $i = 1;
+      foreach (array_reverse($partitions) as $partition) {
+        $head = $partition[0];
+        $article_ids = array_values($partition[1]);
+        $startaid = $article_ids[0];
+        $endaid = end($article_ids);
+        $st = $articles[$startaid]->get_start_date_ts();
+        $et = $articles[$endaid]->get_start_date_ts();
+        $ed = ($et - $st < $min_day_gap) ?
+                                $articles[$endaid]->get_farther_end_date($min_day_gap) :
+                                $articles[$endaid]->get_end_date();
         $all_actors = get_all_actors($articles, $article_ids);
         $all_topics = get_all_topics($articles, $article_ids);
         $h = get_headlines($articles, $article_ids);
         $h = $all_actors . '|' . $all_topics . '|' . $h;
         $elem = array(
           'title'       =>  '',
-          'tid'         =>  $i,
           'description' =>  $h,
           'trackNum'    =>  $i,
           'textColor'   =>  BLACK,
           'start'       =>  $articles[$startaid]->get_start_date(),
-          'end'         =>  $articles[$endaid]->get_end_date(),
-          'color'       =>  'rgb(0,0,0)'
+          'end'         =>  $ed,
+          'color'       =>  BLACK
         );
         array_push($elems, $elem);
         $i++;
@@ -401,6 +526,7 @@
   }
   
   function article_periodize($articles, $ra_map, $cutoff) {
+    if (!sizeof($articles)) return;
     $st = $articles[0]->get_start_date_ts();
     $ws = 20;
     $periods = array(array()); // partitioning of articles id

@@ -26,7 +26,7 @@
   include 'tasks.php';
 
   // the task-dependent constants
-  $limit = 200;
+  $limit = 1000;
   $task_id = get_task_id($_GET);// encoding for the different tasks
   if ($task_id >= $total_tasks) $task_id = 0;
   $actors = get_actors($task_id);
@@ -65,12 +65,15 @@
   // not contained, so that a natural topic hierarchy is visualized
   $ra_map = reverse_actor_map($articles);
   $timeline_actors = get_actors_by_article_count($ra_map);
+  // take an array slice here.
   
   $rt_map = reverse_topic_map($articles);
   $topic_containers = get_containers($rt_map);
+  
   $level1 = get_first_level($topic_containers);
+  
   $timeline_topics = array_keys($level1);
-  $t_color_map = assign_colors($timeline_topics);
+  //$t_color_map = assign_colors($timeline_topics);
   
   foreach ($articles as $article) {
     $article->keep_topics($timeline_topics);
@@ -86,16 +89,16 @@
   $jsobj = array('events' => array()); // the Timeline javascript object
   $tid = 1;
   $partition_events = array();
-  $aggregate = "false";
-  if (isset($_POST['on']) and $_POST['on'] == 'true') {
-    $aggregate = "true";
-    $cutoff = 3;
-    $tid = $cutoff + 1;
-    $period_partitions = article_periodize($articles, $ra_map, $cutoff);
-    $partition_events = create_partition_events($articles, $period_partitions);
-  }
-  $jsobj['events'] = get_timeline_events($timeline_actors, $articles, $ra_map, $t_color_map, $tid);
-  $jsobj['events'] = array_merge($jsobj['events'], $partition_events);
+  // do aggregation always!
+  $cutoff = 5;
+  $tid = $cutoff + 1;
+  $period_partitions = article_periodize($articles, $ra_map, $cutoff);
+  $period_partitions = create_stitched_partitions($articles, $period_partitions);
+  $partition_events = create_stitched_partition_events($articles, $period_partitions);
+  
+  
+  //$jsobj['events'] = get_timeline_events($timeline_actors, $articles, $ra_map, $t_color_map, $tid);
+  $jsobj['events'] = $partition_events;
   
 ?>
     <!--<div class="holder"></div> A trick to make always visible filter-->
@@ -104,7 +107,7 @@
         <span class="task tipsy" rel="tooltip" title="Task Question" data-placement="bottom"><?php show_task_question($task_id); ?></span><br>
         <a id="gi" href="#" rel="tooltip" data-placement="right" class="tipsy" data-original-title="Click to read some general instructions. Click again to hide.">General Instructions</a>
         <span class="hide" id="detail-instructions">
-        For the above task, you have to form an opinion and answer based on the relevant articles that appeared. The select boxes below are for filtering on people, topics and from-to date. You can see the color-coded map of all topics that appeared related to the people &amp; topics that are being filtered currently, on the right. You can click on one to append to the search. For every task, you need to submit the appropriate answer in text and/or by selecting the options. You can click on the timeline of actors appearing below to have a look at the topics and articles. A timer is kept to track this session. 
+        For the above task, you have to form an opinion and answer based on the relevant articles that appeared. The select boxes below are for filtering on people, topics and from-to date. A list of events that occured through the year are shown on the timeline below. A timer is kept to track this session. <em>Please avoid pressing Back, instead deselect the filters.</em>
         </span>
       </p>
       <form method="POST" id="filter-form">
@@ -133,7 +136,6 @@
               <td>
                 <input type="text" id="td" name="td" placeholder="till ..." autocomplete="off" class="ui-widget ui-state-default ui-corner-all" value="<?php echo $td;?>"/>
               <input type="hidden" name="ts" id="timer-value">
-              <input type="hidden" name="on" id="aggregate" value="<?php echo $aggregate;?>">
               <button rel="tooltip" title="Query for articles on the specified filter" type="submit" class="ui-widget ui-state-default ui-corner-all tipsy">query</button>
               </td>
             </tr>
@@ -151,7 +153,7 @@
       </form>
       <button rel="tooltip" title="Submit this answer." id="submit-answer" class="ui-widget ui-state-default ui-corner-all tipsy">submit answer</button>
       <button rel="tooltip" title="Skip this task and go back to the survey home page." id="skip-task" class="ui-widget ui-state-default ui-corner-all tipsy">skip task</button>
-      <button rel="tooltip" title="Aggregation tries to aggregate all the articles related by one or more common actors and topics into a single black block." id="turn-on" class="ui-widget ui-state-default ui-corner-all tipsy">toggle aggregation feature</button>
+      <!--<button rel="tooltip" title="Aggregation tries to aggregate all the articles related by one or more common actors and topics into a single black block." id="turn-on" class="ui-widget ui-state-default ui-corner-all tipsy">toggle aggregation feature</button>-->
       <button rel="tooltip" title="Show all articles relevant to the filtered actors and topics" id="show-all-articles" class="ui-widget ui-state-default ui-corner-all tipsy">show all articles</button>
       <button rel="tooltip" title="Study the interaction among the filtered set of actors" id="study-interaction" class="ui-widget ui-state-default ui-corner-all tipsy">study interaction</button>
       <!--<a id="zout" class="icon-zoom-in tipsy" title="Zoom Into the Timeline"></a>
@@ -162,9 +164,15 @@
       <span id="minutes"><?php echo $ts[0];?></span>:<span id="seconds"><?php echo $ts[1];?></span>
     </div>
     <div rel="tooltip" class="legend tipsy" title="Select topics to go into the filter">
-      <?php show_legend($t_color_map);?>
+      <?php show_bland_legend($timeline_topics);?>
     </div>
+    <span style="padding-left:30px;font-weight:bold;color:<?php echo BLACK;?>">Timeline events involving the filtered actors and topics:</span>
     <div id="tl"></div>
+    <?php if (sizeof($articles)): ?>
+      <span style="padding-left:30px;font-weight:bold;color:<?php echo PROMINENT;?>">Significant Event</span><br>
+    <?php else: ?>
+      <span style="padding-left:30px;font-weight:bold;"><?php  echo 'No Articles Found.';?></span>
+    <?php endif; ?>
     <div id="modal-bubble" class="modal hide fade">
       <div class="modal-header"></div>
       <div class="modal-body"></div>
@@ -184,8 +192,9 @@
     <!--Google Charting API-->
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <!--D3 Library-->
+    <script src="http://d3js.org/d3.v2.min.js?2.8.1"></script>
     <!--My Script-->
-    <script src="survey-script.js" type="text/javascript"></script>
+    <script src="survey-script_v2.js" type="text/javascript"></script>
     <?php
       echo '<script>
       var task_id = ' . json_encode($task_id) . ';

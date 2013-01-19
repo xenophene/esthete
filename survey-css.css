@@ -45,15 +45,18 @@ body {
   position: fixed;
   top: 40px;
   right: 20px;
-  width: 15%;
+  max-width: 12%;
   text-align: right;
   font-weight: bold;
   overflow: auto;
   height: 200px;
   z-index: 50;
 }
+.legend:hover {
+  background: #f9f9f9;
+}
 .topic-include span {
-  background: #fff;
+  background-color: #fff;
 }
 .legend ul li {
   cursor: pointer;
@@ -81,6 +84,9 @@ ul {
 .highlight {
   text-decoration: underline;
   background: #eee;
+}
+#filter-form table {
+  background: #f9f9f9;
 }
 #filter-form thead {
   font-size: 11px;
@@ -125,4 +131,40 @@ ul {
 .error {
   color: #fff;
   background-color: #ff0000;
+}
+.evt-call a {
+  cursor: pointer;
+}
+input {
+  padding: 2px;
+}
+a{color:#0088cc;text-decoration:none;}
+a:hover{color:#005580;text-decoration:underline;}
+.row{margin-left:-20px;*zoom:1;}.row:before,.row:after{display:table;content:"";}
+.row:after{clear:both;}
+[class*="span"]{float:left;margin-left:20px;}
+.container,.navbar-fixed-top .container,.navbar-fixed-bottom .container{width:940px;}
+.span12{width:940px;}
+.span11{width:860px;}
+.span10{width:780px;}
+.span9{width:700px;}
+.span8{width:620px;}
+.span7{width:540px;}
+.span6{width:460px;}
+.span5{width:380px;}
+.span4{width:300px;}
+.span3{width:220px;}
+.span2{width:140px;}
+.span1{width:60px;}
+.background {
+  fill: #eee;
+}
+line {
+  stroke: #fff;
+}
+text.active {
+  fill: red;
+}
+text {
+  font: 10px sans-serif;
 }

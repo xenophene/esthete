@@ -13,7 +13,10 @@
       }
     }
     function set_uactors($uactors) {
-      $this->uactors = array_map('trim', explode(',', strtolower($uactors)));
+      $patt = '/u00\d{1}\w{1}/';
+      $matches = array();
+      $uactors = preg_replace_callback($patt, "add_slash", $uactors);
+      $this->uactors = array_filter(array_unique(array_map('trim', explode(',', strtolower($uactors)))));
     }
     function set_new_uactors($uactors) {
       $this->uactors = array_unique($uactors);
@@ -33,6 +36,7 @@
           if (!empty($t)) array_push($this->utopics, $t);
         }
       }
+      $this->utopics = array_unique($this->utopics);
     }
     function set_summary($summary) {
       $this->summary = $summary;
@@ -67,8 +71,14 @@
     function get_end_date() {
       return date('F j Y', strtotime("+1 days", strtotime($this->date)));
     }
+    function get_farther_end_date($n) { // $n number of days ahead
+      return date('F j Y', strtotime("+" . $n . " days", strtotime($this->date)));
+    }
     function get_id() {
       return $this->id;
+    }
+    function get_identifier() {
+      return array($this->id, $this->get_headline());
     }
     
     function remove_actors($fa) {
@@ -81,6 +91,9 @@
     }
     
     function remove_topics($ft) {
+      // first check if we will end up deleting all, if not go ahead, else no
+      // ? whether this is to be done?
+
       foreach ($ft as $t) {
         $key = array_search($t, $this->utopics);
         if ($key !== false) {

@@ -291,8 +291,8 @@ Timeline._Band.prototype.setBandShiftAndWidth = function(shift, width) {
     var middle = shift + Math.floor(width / 2);
     if (this._timeline.isHorizontal()) {
         this._div.style.top = shift + "px";
-        this._div.style.height = width + "px";
-        //this._div.style.height = "100%";
+        //this._div.style.height = width + "px";
+        this._div.style.height = "100%";
         inputDiv.style.top = middle + "px";
         inputDiv.style.left = "-1em";
     } else {

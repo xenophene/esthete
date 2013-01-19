@@ -1,5 +1,5 @@
 <?php
-  $total_tasks = 8;
+  $total_tasks = 9;
   // constants functions based on task
   
   function show_task_question($task_id) {
@@ -12,7 +12,9 @@
       4 => "Discuss the controversy surrounding Subodh Kant Sahay and his brother SKS Ispat." ,
       5 => "Which all of the following hold true regarding the events involving Subramanium Swamy and P. Chidambaram in the year 2012?",
       6 => "Describe all the recent developments related to India's space program.",
-      7 => "What were some activities Saina Nehwal was involved in besides Badminton [Hint: Try topics like People/Celebrity]"
+      7 => "What were some activities Saina Nehwal was involved in besides Badminton in the year 2012 [Hint: Try topics like People/Celebrity]",
+      8 => "Find articles that capture the following facts regarding stories around rape cases in India",
+      9 => "Find articles which portray how different sections of society have reacted to the frequent petrol price hikes in the past"
     );
     echo $task_questions[$task_id];
   }
@@ -61,6 +63,16 @@
             "Saina was honoured by the PM Manmohan Singh for her performance at the Olympics",
             "Saina was involved in a corruption scam"
           ),
+      8 => array(
+            "Incidents of rape cases have gone up over the past year",
+            "Rape cases in the state of West Bengal have been dealth with harshly",
+            "Majority of politicians have openly come out and held women partly responsible in a rape case"
+          ),
+      9 => array(
+              "The opposition has regularly called and implemented a nation bandh",
+              "The state governments have on some occasions lowered the taxes on fuel"
+          )
+    
     );
 
     $questions = $task_options[$task_id];
@@ -129,7 +141,9 @@
       6 => array(),
       7 => array(
             "Saina Nehwal"
-          )
+          ),
+      8 => array(),
+      9 => array()
     );
     return $task_actors[$task_id];
   }
@@ -142,9 +156,17 @@
       4 => array(),
       5 => array(),
       6 => array(
-            "Space Programme",
+            "Science and Technology",
           ),
-      7 => array()
+      7 => array(
+            "Sport",
+            "Badminton"
+          ),
+      8 => array(
+            "Sexual Assault & Rape",
+            "Crime"
+          ),
+      9 => array()
     );
     return $task_topics[$task_id];
   }
@@ -158,7 +180,11 @@
       4 => '/.*/',
       5 => '/.*/',
       6 => '/.*/',
-      7 => '/.*/'
+      7 => '/.*/',
+      8 => '/.*/',
+      9 => '/.*/',
+      10 => '/.*/',
+      11 => '/.*/'
     );
     return $task_pattern[$task_id];
   }
@@ -171,7 +197,9 @@
       4 => 'corruption',
       5 => 'corruption',
       6 => 'hindu',
-      7 => 'badminton'
+      7 => 'badminton',
+      8 => 'rape',
+      9 => 'petrol'
     );
     return $task_table[$task_id];
   }

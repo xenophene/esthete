@@ -557,7 +557,7 @@ Timeline._Impl.prototype._distributeWidths = function() {
         	bandWidth = widthString;
         }
         	 
-        band.setBandShiftAndWidth(cumulativeWidth, bandWidth);
+        //band.setBandShiftAndWidth(cumulativeWidth, bandWidth);
         band.setViewLength(length);
         
         cumulativeWidth += bandWidth;
