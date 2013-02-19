@@ -4,7 +4,9 @@
 var tl
   ,	monthNames = [ "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December" ]
-  , saveReply;
+  , saveReply
+	, globalActorMap
+	, globalTopicMap;
 
 function get_month_code(mon) {
   switch(mon) {
@@ -27,8 +29,7 @@ function get_month_code(mon) {
 $(function () { //ready function
   var currScroll = 0;
   var currEvt;
-  
-  /*Ref: http://code.google.com/p/simile-widgets/wiki/Timeline_EventSources */
+  /* Ref: http://code.google.com/p/simile-widgets/wiki/Timeline_EventSources */
   var tl_el = document.getElementById("tl");
   var eventSource1 = new Timeline.DefaultEventSource(0);
   
@@ -113,8 +114,8 @@ $(function () { //ready function
   
   var url = '.'; // The base url for image, icon and background image
                  // references in the data
-  eventSource1.loadJSON(data, url); // The data was stored into the 
-                                   // data variable.
+  eventSource1.loadJSON(data, url);
+	/* data consists of the base url echoed */
   tl.layout(); // display the Timeline
   // show the date selector
   var dates = $( "#fd, #td" ).datepicker({
@@ -251,65 +252,86 @@ $(function () { //ready function
 	$('#modal-bubble').modal('show');
   }
   Timeline.OriginalEventPainter.prototype._showBubble = function (x, y, evt) {
-	if (!evt._description) return;
-	currEvt = evt;
-	var tabs = '<div class="tabbable"><ul id="event-tabs" class="nav nav-tabs">';
-	tabs += '<li class="active"><a href="#t1">Interacting Actors</a></li> \
-			 <li><a href="#t3">Read Articles</a></li></ul>';
+		if (!evt._description) return;
+		currEvt = evt;
+		var tabs = '<div class="tabbable"><ul id="event-tabs" class="nav nav-tabs">';
+		tabs += '<li><a href="#t1">Interacting Actors</a></li> \
+						 <li><a href="#t2">Interacting Topics</a></li> \
+						 <li class="active"><a href="#t3">Read Articles</a></li></ul>';
+		
+		
+		tabs += '<div class="tab-content"> \
+				 <div class="tab-pane" id="t1"><div style="padding-left:50px" id="i-a"></div></div> \
+				 <div class="tab-pane" id="t2"><div style="padding-left:50px" id="i-t"></div></div> \
+				 <div class="tab-pane active" id="t3"><div id="r-a"></div></div> \
+				 </div></div>';
+		
+		showModal('<h3>Event Details</h3>', tabs);
+		
+		$('#event-tabs a').click(function(e) {
+			e.preventDefault();
+			$(this).tab('show');
+		});
 	
-	
-	tabs += '<div class="tab-content"> \
-			 <div class="tab-pane active" id="t1"><div style="padding-left:50px" id="i-a"></div></div> \
-			 <div class="tab-pane" id="t3"><div id="r-a"></div></div> \
-			 </div></div>';
-	
-	showModal('<h3>Event Details</h3>', tabs);
-	
-	$('#event-tabs a').click(function(e) {
-	  e.preventDefault();
-	  $(this).tab('show');
-	});
-	
-    showArticleList(evt);
-	showActorBubbles(evt);
+		showArticleList(evt);
+		showActorBubbles(evt);
+		showTopicBubbles(evt)
   };
   function showActorBubbles(evt) {
-	var desc = evt._description.split('|');
-	var aids = desc[2].toString().split('^');
-	console.log(aids);
-	$('#i-a').append(getLoadingImg());
-	$.ajax({
-	  url: 'ajax_scripts.php',
-	  method: 'GET',
-	  dataType: 'json',
-	  data: {
-		'fid': '6',
-		'aids': aids,
-		'tid': task_id
-	  },
-	  success: successD3BubblePlot
-	});
+		var desc = evt._description.split('|');
+		var aids = desc[2].toString().split('^');
+		$('#i-a').append(getLoadingImg());
+		$.ajax({
+			url: 'ajax_scripts.php',
+			method: 'GET',
+			dataType: 'json',
+			data: {
+			'fid': '6',
+			'aids': aids,
+			'tid': task_id
+			},
+			success: successD3BubblePlot
+		});
   }
+	function showTopicBubbles(evt) {
+		var desc = evt._description.split('|');
+		var aids = desc[2].toString().split('^');
+		$('#i-t').append(getLoadingImg());
+		$.ajax({
+			url: 'ajax_scripts.php',
+			method: 'GET',
+			dataType: 'json',
+			data: {
+			'fid': '5',
+			'aids': aids,
+			'tid': task_id
+			},
+			success: successD3BubblePlot
+		});
+	}
 	// iterate through desc[0] and put the actor as name, size where size is number of occurences in desc[2]
   function successD3BubblePlot(data) {
 		$('.loading').remove();
 		var actors = [],
 				len = 0,
-				threshold = 10;
+				threshold = 10,
+				sep = data[Object.keys(data)[0]][3],
+				id = data[Object.keys(data)[0]][4];
+		
 		actors['name'] = 'actors';
 		actors['children'] = [];
 		var actor_counts = [];
 		for (k in data) {
-			data[k][0].split(',').map(function(str) {
-			if (actor_counts[str]) actor_counts[str]++;
-			else actor_counts[str] = 1;
+			data[k][0].split(sep).map(function(str) {
+				if (actor_counts[str]) actor_counts[str]++;
+				else actor_counts[str] = 1;
 			});
 		}
 		var values = [];
 		for (k in actor_counts) {
 			values.push(actor_counts[k]);
 		}
-		values = values.sort().reverse();
+		values = values.sort(function(a,b){return b - a;});
 		var lim = values.length > threshold ? values[threshold - 1] : values[values.length - 1];
 		for (k in actor_counts) {
 			var elm = [];
@@ -329,7 +351,7 @@ $(function () { //ready function
 			.size([diameter, diameter])
 			.padding(1.2);
 		
-		var svg = d3.select("#i-a").append("svg")
+		var svg = d3.select("#" + id).append("svg")
 			.attr("width", diameter)
 			.attr("height", diameter)
 			.style("left", "40px")
@@ -369,11 +391,13 @@ $(function () { //ready function
   }
   function showArticleList(evt) {
 		var desc = evt._description.split('|');
-			var sdate = parseDate(evt._start.toString());
-			var edate = parseDate(evt._end.toString());
-			var date = sdate.getDate() + ' ' + monthNames[sdate.getMonth()];
-			date += ' - ' + edate.getDate() + ' ' + monthNames[edate.getMonth()];
-			var headercode = '';
+		/*
+		var sdate = parseDate(evt._start.toString());
+		var edate = parseDate(evt._end.toString());
+		var date = sdate.getDate() + ' ' + monthNames[sdate.getMonth()];
+		date += ' - ' + edate.getDate() + ' ' + monthNames[edate.getMonth()];
+		*/
+		var headercode = '';
 		
 		if (desc[1] == '') {
 			var gtopics = [];
@@ -418,13 +442,17 @@ $(function () { //ready function
   $('#study-interaction').click(function() {
 		if (!google.visualization) return;
 		var tabs = '<div class="tabbable"><ul id="interaction-tabs" class="nav nav-tabs">';
-		tabs += '<li class="active"><a href="#t1">Interaction Strength</a></li> \
-				 <li><a href="#t2">Topic Hierarchy</a></li></ul>';
+		tabs += '<li class="active"><a href="#t1">Interaction Strength</a></li>'
+						//<li><a href="#t2">Topic Hierarchy</a></li>
+						+'<li><a href="#t3">Popular Actors</a></li>\
+						<li><a href="#t4">Popular Topics</a></li></ul>';
 		
 		
 		tabs += '<div class="tab-content"> \
 				 <div class="tab-pane active" id="t1"><div id="i-s">' + getLoadingImg() + '</div></div> \
-				 <div class="tab-pane" id="t2"><div id="t-h"></div></div> \
+				 '//<div class="tab-pane" id="t2"><div id="t-h"></div></div>
+				 +'<div class="tab-pane" id="t3"><div id="mpa">' + getLoadingImg() + '</div></div> \
+				 <div class="tab-pane" id="t4"><div id="mta">' + getLoadingImg() + '</div></div> \
 				 </div></div>';
 		
 		showModal('<h3>Interactions</h3>', tabs);
@@ -491,7 +519,6 @@ $(function () { //ready function
 			, sortMonthBins = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 			, monthTopics = []
 			,	monthAids = [];
-		console.log(reply);
 		for (k in reply) {
 			var amonth = parseInt(reply[k][2].split('-')[1], 10) - 1;
 			monthBins[amonth]++;
@@ -529,7 +556,8 @@ $(function () { //ready function
 		for (k in keyMonth) {
 			var headlines = [];
 			monthAids[keyMonth[k]].slice(0, 2).map(function(v) {
-				headlines.push('<u>' + $.trim(article_identifier[v]) + '</u>')
+				headlines.push('<u name="' + v + '" class="legend-links">' +
+											 $.trim(article_identifier[v]) + '</u>');
 			});
 			var others;
 			if (monthAids[keyMonth[k]].length <= 2) {
@@ -539,10 +567,10 @@ $(function () { //ready function
 			} else {
 				others = '<span class="grey"> and ' + (monthAids[keyMonth[k]].length - 2) + ' others</span>';
 			}
-			console.log(others);
 			code += k + '. ' + headlines.join(', ') + others + '<br>';
 		}
 		$('#headline-key').html(code);
+		$('.legend-links').click(renderArticle);
 		dataTable.addRows(is_data);
 		var options = {
 			'title': 'Interaction Influence over time'
@@ -550,7 +578,6 @@ $(function () { //ready function
 		// Instantiate and draw our chart, passing in some options.
 		var chart = new google.visualization.LineChart(document.getElementById('i-graph'));
 		chart.draw(dataTable, options);
-		console.log(keyMonth);
 	}
 	
   function assoc_array_sort(obj) {
@@ -605,6 +632,27 @@ $(function () { //ready function
 		var chart = new google.visualization.LineChart(document.getElementById('i-s'));
 		chart.draw(dataTable, options);
 		
+		// get actors from all articles in reply, and create a popularity list
+		if (globalActorMap) successD3BubblePlot(globalActorMap);
+		else {
+			globalActorMap = {};
+			for (k in reply) {
+				var actors = [];
+				var thisActors = reply[k][5].split(',');
+				thisActors.map(function (s) {if ($.trim(s) != "") actors.push(s);});
+				if (!actors.length) continue;
+				globalActorMap[k] = [actors.join(','), k, reply[k][2], ',', 'mpa'];
+			}
+			successD3BubblePlot(globalActorMap);
+		}
+		if (globalTopicMap) successD3BubblePlot(globalTopicMap);
+		else {
+			globalTopicMap = {};
+			for (k in reply) {
+				globalTopicMap[k] = [reply[k][0], k, reply[k][2], ';', 'mta'];
+			}
+			successD3BubblePlot(globalTopicMap);
+		}
 		var count_array = [];
 		for (var k in levels) {
 			if (!count_array[k]) count_array[k] = 1;
@@ -631,6 +679,14 @@ $(function () { //ready function
   function getLoadingImg() {
 		return '<ul class="loading"><li><img src="loading3.gif" alt="Loading" title="Loading"/></li></ul>';
 	}
+	
+	$('#go-back').click(function () {
+		$('#going-back').val('1');
+		console.log($('#going-back').val());
+		return false;
+		$('#filter-form').submit();
+		
+	});
   
   $('#show-all-articles').click(function() {
 		var headercode = '<h3>All Articles</h3>';
@@ -646,8 +702,22 @@ $(function () { //ready function
 		$('.evt-call').each(function () {$(this).children('a').tooltip();});
 		$('.evt-call').click(showArticles);
   });
+	function renderArticle() {
+		// search for aid in data
+		var aid = $(this).attr('name');
+		for (var k in data.events) {
+			var d = data.events[k].description.split("|")[2].split('^');
+			if (d.indexOf(aid) != -1) {
+				Timeline.OriginalEventPainter.prototype._showBubble(0, 0, {
+					'_description': data.events[k].description
+				});
+			}
+		}
+	}
+	
   function showArticles() {
 		var id = $(this).attr('name');
+		console.log(id);
 		if (!$(this).attr('called')) {
 			$(this).append(getLoadingImg());
 			$.ajax({
@@ -665,16 +735,19 @@ $(function () { //ready function
 					elm.children('a').css('font-weight', 'bold');
 					// use markers
 					var markers = '<ul class="use-marker">\
-					<li rel="tooltip" title="Mark article as relevant">Relevant Article</li>\
-					<li rel="tooltip" title="Mark article as irrelevant">Irrelevant Article</li>\
+					<li rel="tooltip" name="1" title="Mark article as relevant for point 1">Relevant for 1</li>\
+					<li rel="tooltip" name="2" title="Mark article as relevant for point 2 (if given)">Relevant for 2</li>\
+					<li rel="tooltip" name="3" title="Mark article as relevant for point 3 (if given)">Relevant for 3</li>\
+					<li rel="tooltip" name="4" title="Mark article as irrelevant for task">Mark Irrelevant</li>\
 					</ul>';
 					elm.append(markers);
 					$('.use-marker li').each(function() {$(this).tooltip();});
 					$('.use-marker li').click(sendRelevance);
+					var date = data[3].split('-')[2] + ' ' + monthNames[parseInt(data[3].split('-')[1], 10) - 1] + ' ' + data[3].split('-')[0];
 					if (data[2]) {
-						elm.append('<strong>' + data[3] + '</strong><br><i>' + data[2] + '</i>');
+						elm.append('<strong>Date: ' + date + '</strong><br><i>' + data[2] + '</i>');
 					} else {
-						elm.append('<strong>' + data[3] + '</strong>');
+						elm.append('<strong>Date: ' + date + '</strong>');
 					}
 					elm.append('<p>' + data[1] + '</p>');
 				}
@@ -691,7 +764,7 @@ $(function () { //ready function
   function sendRelevance() {
     var id = $(this).parent().parent().attr('name');
     var rid = 0;
-    if ($(this).text().indexOf('R') != -1) rid = 1;
+    rid = $(this).attr('name');
     $.ajax({
       'url': 'ajax_scripts.php',
       'method' : 'GET',
@@ -699,7 +772,8 @@ $(function () { //ready function
         'fid': '2',
         'aid': id,
         'task_id': task_id,
-        'rid': rid
+        'rid': rid,
+				'session': session
       }
     });
   }
@@ -710,7 +784,26 @@ $(function () { //ready function
 		else $('#aggregate').val('true');
 		$('#filter-form').submit();
   });
-  $('#skip-task').click(function () {window.location.href = 'index.php';});
+  $('#skip-task').click(function () {
+		var answerText = '';
+		var indices = '';
+		var time = $('#minutes').html() + ':' + $('#seconds').html();
+		
+		$.ajax({
+      'url': 'ajax_scripts.php',
+      'method' : 'GET',
+      'data' : {
+        'fid': '3',
+        'time': time,
+        'task_id': task_id,
+        'answerText': answerText,
+        'answers': indices
+      },
+      'success': function () {
+        window.location.href = 'index.php';
+      }
+    });
+	});
   $('#submit-answer').click(function () {
     // get the necessary details
     var indices = new Array();

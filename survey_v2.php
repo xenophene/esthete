@@ -35,16 +35,20 @@
   
   // get arguments
   $ts = get_time_spent($_POST);
+  $pfa = get_past_filters($_POST, 'past-fa');
+  $pft = get_past_filters($_POST, 'past-ft');
   $fa = get_filtered_actors($_POST, $actors);
   $ft = get_filtered_topics($_POST, $topics);
   $fd = get_start_date($_POST, $task_start_date[$task_id]);
   $td = get_end_date($_POST, $task_end_date[$task_id]);
+  $session = get_or_set_session_id($_POST);
   $fyear = get_year($fd);
   $fmonth = get_month($fd);
   $fday = get_day($fd);
   $tyear = get_year($td);
   $tmonth = get_month($td);
   $tday = get_day($td);
+  
   
   store_relevance($fa, $ft, $task_id);
   $r = craft_and_run_query($fa, $ft, $fd, $td, $tablename, $limit);
@@ -72,7 +76,7 @@
   
   $level1 = get_first_level($topic_containers);
   
-  $timeline_topics = array_keys($level1);
+  $timeline_topics = array_keys($rt_map);
   //$t_color_map = assign_colors($timeline_topics);
   
   foreach ($articles as $article) {
@@ -90,13 +94,14 @@
   $tid = 1;
   $partition_events = array();
   // do aggregation always!
-  $cutoff = 5;
+  $cutoff = 10;
   $tid = $cutoff + 1;
   $period_partitions = article_periodize($articles, $ra_map, $cutoff);
   $period_partitions = create_stitched_partitions($articles, $period_partitions);
   $partition_events = create_stitched_partition_events($articles, $period_partitions);
+  $timelinejs_events = create_stitched_timelinejs_events($articles, $period_partitions);
   
-  
+  $timelinejs = set_up_timelinejs($timelinejs_events);
   //$jsobj['events'] = get_timeline_events($timeline_actors, $articles, $ra_map, $t_color_map, $tid);
   $jsobj['events'] = $partition_events;
   
@@ -131,10 +136,17 @@
             <tr>
               <td>
                 <input type="text" id="fd" name="fd" placeholder="from ..." autocomplete="off" class="ui-widget ui-state-default ui-corner-all" value="<?php echo $fd;?>"/>
+                <?php if(!empty($pfa) or !empty($pft)) :?>
+                <button rel="tooltip" title="Go back to the previous filter settings" id="go-back" class="ui-widget ui-state-default ui-corner-all tipsy">back</button>
+                <?php endif; ?>
               </td>
               <td>
                 <input type="text" id="td" name="td" placeholder="till ..." autocomplete="off" class="ui-widget ui-state-default ui-corner-all" value="<?php echo $td;?>"/>
                 <input type="hidden" name="ts" id="timer-value">
+                <input type="hidden" name="sessid" id="sessid" value="<?php echo $session;?>">
+                <input type="hidden" name="past-fa" id="past-fa" value="<?php echo implode(',', $fa); ?>">
+                <input type="hidden" name="past-ft" id="past-ft" value="<?php echo implode(';', $ft); ?>">
+                <input type="hidden" name="going-back" id="going-back" value="0">
                 <button rel="tooltip" title="Query for articles on the specified filter" type="submit" class="ui-widget ui-state-default ui-corner-all tipsy">query</button>
               </td>
             </tr>
@@ -154,7 +166,7 @@
       </form>
       <a id="gi" href="#" rel="tooltip" data-placement="right" class="tipsy small" data-original-title="Click to read some general instructions. Click again to hide.">General Instructions</a>
       <span class="hide" id="detail-instructions">
-      For the above task, you have to form an opinion and answer based on the relevant articles that appeared. Clicking on an event on the timeline below brings out the various actors and articles involved in it. The select boxes below are for filtering on people, topics and from-to date. A timer is kept to track this session. <em>Please avoid pressing Back, instead deselect the filters.</em>
+      For the above task, you have to find relevant articles for one or more of the points. When you find a relevant article, you should mark it as relevant for the corresponding point. Clicking on a bar on the timeline below displays more information about it. The select boxes below are for filtering on people, topics and from-to date. A timer is kept to track this session. <em>Please avoid pressing Back, instead deselect the filters.</em>
       </span>
       
       <!--<a id="zout" class="icon-zoom-in tipsy" title="Zoom Into the Timeline"></a>
@@ -166,19 +178,17 @@
       <span id="minutes"><?php echo $ts[0];?></span>:<span id="seconds"><?php echo $ts[1];?></span>
     </div>
     
-    <div class="legend tipsy" id="i-graph"></div>
+    <div class="legend tipsy" id="i-graph"><ul class="loading"><li><img src="loading3.gif" alt="Loading" title="Loading"/></li></ul></div>
     <!--
     <div rel="tooltip" class="legend tipsy" title="Select topics to go into the filter">
       <?php //show_bland_legend($timeline_topics);?>
     </div>
     -->
-    <span style="padding-left:20px;font-weight:bold;color:<?php echo BLACK;?>">Timeline events around the filtered actors and topics:</span><br>
+    <span style="padding-left:20px;font-weight:bold;color:<?php echo BLACK;?>">Timeline events around the filtered actors and topics. </span><span style="font-weight:bold;color:<?php echo PROMINENT;?>">(Events in this color are most significant)</span><br>
     <div id="tl"></div>
-    <div class="row">
+    <div class="row shift-right">
       <div class="controls span2">
-        <?php if (sizeof($articles)): ?>
-          <span style="font-weight:bold;color:<?php echo PROMINENT;?>">Significant Event</span>
-        <?php else: ?>
+        <?php if (!sizeof($articles)): ?>
           <span style="font-weight:bold;"><?php  echo 'No Articles Found.';?></span>
         <?php endif; ?>
         <br>
@@ -223,8 +233,10 @@
       var tday = ' . json_encode($tday) . ';
       var fyear = ' . json_encode($fyear) . ';
       var tyear = ' . json_encode($tyear) . ';
+      var session = ' . json_encode($session) . ';
       var article_identifier = ' . json_encode($article_identifier) . ';
       var levels = ' . json_encode($topic_containers) . ';
+      var timelinejsobj = ' . json_encode($timelinejs) . ';
           </script>';
     ?>
   </body>

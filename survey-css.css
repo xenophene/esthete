@@ -16,12 +16,12 @@ body {
   background: #fff;
   color: #111;
   width: 60%;
-  max-width: 800px;
+  max-width: 840px;
   /*top: 0px;*/
   /*position: fixed;*/
   /*z-index: 100;*/
 }
-form>ul {
+form>ol {
   font-size: 13px;
   margin: 0 0 10px 10px;
 }
@@ -45,15 +45,15 @@ form>ul {
 }
 .legend {
   position: fixed;
-  top: 40px;
+  top: 30px;
   right: 20px;
-  min-width: 450px;
+  width: 20%;
+  min-width: 400px;
   max-width: 500px;
   text-align: right;
   font-weight: bold;
   overflow: hidden;
   height: 220px;
-  z-index: 50;
 }
 .legend:hover {
   background: #f9f9f9;
@@ -73,10 +73,14 @@ ul {
   font-style: italic;
   cursor: pointer;
   padding: 0 5px 0 5px;
+  border-right: solid 1px #111;
 }
 .use-marker li:first-child {
-  border-right: solid 1px #111;
+  
   padding-left: 0;
+}
+.use-marker li:last-child {
+  border: none;
 }
 .use-marker li:hover {
   text-decoration: underline;
@@ -186,4 +190,10 @@ text {
 .grey {
   color: #555;
   font-size: 12px;
+}
+.shift-right {
+  padding-left: 20px;
+}
+.legend-links {
+  cursor: pointer;
 }

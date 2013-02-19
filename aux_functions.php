@@ -107,19 +107,34 @@
     else return 0;
   }
   function get_filtered_actors($d, $actors) {
+    $go_back = isset($d['going-back']) ? intval($d['going-back']) : 0;
     $fa = array_map('strtolower', $actors);
-    if (array_key_exists('fa', $d) and !empty($d['fa'])) {
+    if (array_key_exists('fa', $d) and !empty($d['fa']) and !$go_back) {
       $fa = array_map('strtolower', $d['fa']);
+    }
+    if (array_key_exists('past-fa', $d) and !empty($d['past-fa']) and $go_back) {
+      $fa = array_map('strtolower', explode(',', $d['past-fa']));
     }
     return $fa;
   }
   function get_filtered_topics($d, $topics) {
     $ft = array_map('strtolower', $topics);
-    if (array_key_exists('ft', $d) and !empty($d['ft'])) {
+    $go_back = isset($d['going-back']) ? intval($d['going-back']) : 0;
+    if (isset($d['ft']) and !empty($d['ft']) and !$go_back) {
       $ft = array_map('strtolower', $d['ft']);
+    }
+    if (array_key_exists('past-ft', $d) and !empty($d['past-ft']) and $go_back) {
+      $ft = array_map('strtolower', explode(';', $d['past-ft']));
     }
     return $ft;
   }
+  
+  function get_past_filters($d, $key) {
+    if (isset($d[$key]) and !empty($d[$key])) {
+      return explode(',', $d[$key]);
+    } else return array();
+  }
+  
   function get_start_date($d, $default) {
     $fd = $default;
     if (array_key_exists('fd', $d) and $d['fd'] != '') {
@@ -145,6 +160,12 @@
   function get_day($d) {
     $d = explode('-', $d);
     return $d[2];
+  }
+  function get_or_set_session_id($d) {
+    if (isset($d['sessid'])) return $d['sessid'];
+    $q = "SELECT * FROM `taskfilters`";
+    $r = mysql_query($q);
+    return mysql_num_rows($r);
   }
   function store_relevance($fa, $ft, $task_id) {
     $fa = implode('|', $fa);
@@ -419,7 +440,7 @@
         $all_actors = get_all_actors($articles, $article_ids);
         $all_topics = get_all_topics($articles, $article_ids);
         $h = get_headlines($articles, $article_ids);
-        $h = $all_actors . '|' . $all_topics . '|' . $h;
+        $h = implode(DESCRIPTION_DELIMITER, array($all_actors , $all_topics, $h));
         $c = sizeof($article_ids) >= 3 ? PROMINENT : DULL;
         $elem = array(
           'title'       =>  '',
@@ -435,6 +456,51 @@
     }
     return $elems;
   }
+  
+  /**
+   * parse the period_partitions object and create a json object in the format
+   * expected by TimelineJS
+   */
+  function create_stitched_timelinejs_events($articles, $period_partitions) {
+    $elems = array();
+    $min_day_gap = 10;
+    if (empty($period_partitions)) return;
+    foreach ($period_partitions as $partitions) {
+      $i = 1;
+      foreach(array_reverse($partitions) as $partition) {
+        $head = $partition[0];
+        $article_ids = array_values($partition[1]);
+        $startaid = $article_ids[0];
+        $endaid = end($article_ids);
+        $st = $articles[$startaid]->get_start_date_ts();
+        $et = $articles[$endaid]->get_start_date_ts();
+        $ed = ($et - $st < $min_day_gap) ?
+                                $articles[$endaid]->get_farther_end_date_timelinejs($min_day_gap) :
+                                $articles[$endaid]->get_end_date_timelinejs();
+        $all_actors = get_all_actors($articles, $article_ids);
+        $all_topics = get_all_topics($articles, $article_ids);
+        $h = get_headlines($articles, $article_ids);
+        $h = implode(DESCRIPTION_DELIMITER, array($all_actors , $all_topics, $h));
+        $c = sizeof($article_ids) >= 3 ? PROMINENT : DULL;
+        $media = array(
+                    'media'   =>  '<h2>Hello, there from media</h2>',
+                    'credit'  =>  '',
+                    'caption' =>  ''
+                    );
+        $elem = array(
+          'startDate'   =>    $articles[$startaid]->get_start_date_timelinejs(),
+          'headline'    =>    'Test Headline',
+          'endDate'     =>    $ed,
+          'text'        =>    'Text summary of the article.',
+          'asset'       =>    $media
+        );
+        array_push($elems, $elem);
+        $i++;
+      }
+    }
+    return $elems;
+  }
+  
   function create_partition_events($articles, $period_partitions) {
     $elems = array();
     $min_day_gap = 10;
@@ -469,6 +535,18 @@
       }
     }
     return $elems;
+  }
+  function set_up_timelinejs($timelinejs_events) {
+    $timelinejs = array();
+    $timeline = array(
+                'headline'  =>  'Timeline Event Headline',
+                'type'      =>  'default',
+                'text'      =>  'The main timeline text about the task',
+                'startDate' =>  '2012,1,1',
+                'date'      =>  $timelinejs_events
+              );
+    $timelinejs['timeline'] = $timeline;
+    return $timelinejs;
   }
   /*
   The key function! The things to be done in this function:

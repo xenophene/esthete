@@ -5,9 +5,9 @@
   function show_task_question($task_id) {
     
     $task_questions = array(
-      0 => "Find and mark relevant the article which helps you to answer which of the following statements is true.",
+      0 => "Find and mark relevant articles which evidence the following statement about Pete Sampras and John McEnroe.",
       1 => "Find and mark relevant articles which verify the following statements involving <strong>Nitin Gadkari</strong>.",
-      2 => "Find and mark relevant articles which talk of the sports rivalry between Andre Agassi and Pete Sampras.",
+      2 => "Find and mark relevant articles which lead you to conclude one of the following statements of the sports rivalry between Andre Agassi and Pete Sampras.",
       3 => "Find and mark relevant articles which bring out the following facts about news featuring <strong>Robert Vadra</strong>",
       4 => "Find and mark relevant articles which bring out the controversy sorrounding Subodh Kant Sahay and his brother SKS Ispat." ,
       5 => "Find and mark relevant articles which bring out the following facts regarding S. Swamy and P. Chidambaram.",
@@ -21,8 +21,6 @@
   function show_task_options($task_id, $d) {
     $task_options = array(
       0 => array(
-            'John McEnroe, being the USA Tennis coach, was unhappy with Pete Sampras not performing up to the mark',
-            'John McEnroe mocked Sampras for not being as passionate for the game as he is',
             'John McEnroe remarked that Sampras only played for money and personal pride over national glory'
           ),
       1 => array(
@@ -36,9 +34,9 @@
             'Agassi and Samprass were dominated by another player, and they did not play many matches together'
           ), 
       3 => array(
-            'The controversy sorrounding Robert Vadra has been highlighted and brought into limelight by a small section of society',
-            'Robert Vadra has been in the news most prominently during election campaigns',
-            'Robert Vadra has come forward to defend himself openly on numerous occasions'
+            'The controversy sorrounding Robert Vadra has been highlighted by various groups of society',
+            'Robert Vadra has been in the news expressing desire to participate in elections',
+            'Robert Vadra has not come forward to defend himself'
           ),
       4 => array(
             "Subodh Kant Sahay allegedly wrote a letter to PM recommending the illegal coal block allocation for his brother's company",
@@ -46,7 +44,6 @@
             "The coal ministry immediately took action following the allegations and deallocated the coal-blocks of SKS Ispat"
           ),
       5 => array(
-            "Special Court dismissed Swamy's plea to make Chidambaram a co-accused in 2G-scam.",
             "Swamy sought review of the decision of special court by again moving the Supreme Court against Chidambaram",
             "The govt. openly defended Chidambram and called Swamy's accusations baseless.",
             "Supreme Court dismissed Swamy's plea for probe against Chidambaram."
@@ -54,14 +51,12 @@
       6 => array(
             "ISRO, India's space agency was caught in a scam related to the Defence sector",
             "ISRO was able to successfully launch its 100th PSLV, named SHAR",
-            "ISRO announced a plan to launch a Mars rover by the year 2020",
             "Former ISRO chairmen got into a fued with the government"
           ),
       7 => array(
             "Saina was in news for being gifted a BMW by Sachin Tendular",
             "Saina offered a token of appreciation to a fellow olympian for an inspiring victory",
             "Saina was honoured by the PM Manmohan Singh for her performance at the Olympics",
-            "Saina was involved in a corruption scam"
           ),
       8 => array(
             "Incidents of rape cases have gone up over the past year",
@@ -76,7 +71,7 @@
     );
 
     $questions = $task_options[$task_id];
-    echo '<ul><li>' . implode($questions, '</li><li>') . '</li></ul>';
+    echo '<ol><li>' . implode($questions, '</li><li>') . '</li></ol>';
     /*
     $resp = '';
     if (isset($d['answer-options'])) $options = $d['answer-options'];

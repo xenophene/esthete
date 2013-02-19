@@ -28,18 +28,21 @@
       if (strpos($topics, ';') === false) {
         foreach (explode(',', strtolower($topics)) as $topic) {
           $t = trim($topic);
-          if (!empty($t)) array_push($this->utopics, $t);
+          if (!empty($t) and strlen($t) <= 25) array_push($this->utopics, $t);
         }
       } else {
         foreach (explode(';', strtolower($topics)) as $topic) {
           $t = trim($topic);
-          if (!empty($t)) array_push($this->utopics, $t);
+          if (!empty($t) and strlen($t) <= 25) array_push($this->utopics, $t);
         }
       }
       $this->utopics = array_unique($this->utopics);
     }
     function set_summary($summary) {
       $this->summary = $summary;
+    }
+    function get_body() {
+      return $this->body;
     }
     function get_headline() {
       return $this->title;
@@ -65,14 +68,23 @@
     function get_start_date() {
       return date('F j Y', strtotime($this->date));
     }
+    function get_start_date_timelinejs() {
+      return date('Y,n,j', strtotime($this->date));
+    }
     function get_start_date_ts() {
       return strtotime($this->date);
     }
     function get_end_date() {
       return date('F j Y', strtotime("+1 days", strtotime($this->date)));
     }
+    function get_end_date_timelinejs() {
+      return date('Y,n,j', strtotime("+1 days", strtotime($this->date)));
+    }
     function get_farther_end_date($n) { // $n number of days ahead
       return date('F j Y', strtotime("+" . $n . " days", strtotime($this->date)));
+    }
+    function get_farther_end_date_timelinejs($n) { // $n number of days ahead
+      return date('Y,n,j', strtotime("+" . $n . " days", strtotime($this->date)));
     }
     function get_id() {
       return $this->id;
@@ -116,6 +128,7 @@
     var $utopics;
     var $date;
     var $summary;
+    var $body;
     function __construct($row) {
       $this->id = $row['aid'];
       $this->set_title($row);
@@ -123,6 +136,6 @@
       $this->set_uactors($row['uactors']);
       $this->set_utopics($row['utopics']);
       $this->date = $row['adate'];
+      $this->body = $row['afull'];
     }
   }
-?>

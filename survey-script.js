@@ -424,41 +424,42 @@ $(function () { //ready function
 	headlines += '</ol>';
 	showModal(headercode, headlines);
 	$('.evt-call').each(function () {$(this).children('a').tooltip();});
-    $('.evt-call').click(showArticles);
+  $('.evt-call').click(showArticles);
 	
   });
   function showArticles() {
 	var id = $(this).attr('name');
+	console.log(id);
 	if (!$(this).attr('called')) {
 	  $(this).append(getLoadingImg());
 	  $.ajax({
-		'url': 'ajax_scripts.php',
-		'method': 'GET',
-		'data': {
-		  'fid': '1',
-		  'aid': id,
-		  'task_id': task_id
-		},
-		'success': function (data) {
-		  $('.loading').remove();
-		  data = $.parseJSON(data);
-		  var elm = $('.evt-call[name="' + data[0] + '"]');
-		  elm.children('a').css('font-weight', 'bold');
-		  // use markers
-		  var markers = '<ul class="use-marker">\
-			<li rel="tooltip" title="Mark article as relevant">Relevant Article</li>\
-			<li rel="tooltip" title="Mark article as irrelevant">Irrelevant Article</li>\
-		  </ul>';
-		  elm.append(markers);
-		  $('.use-marker li').each(function() {$(this).tooltip();});
-		  $('.use-marker li').click(sendRelevance);
-		  if (data[2]) {
-			elm.append('<strong>' + data[3] + '</strong><br><i>' + data[2] + '</i>');
-		  } else {
-			elm.append('<strong>' + data[3] + '</strong>');
-		  }
-		  elm.append('<p>' + data[1] + '</p>');
-		}
+			'url': 'ajax_scripts.php',
+			'method': 'GET',
+			'data': {
+				'fid': '1',
+				'aid': id,
+				'task_id': task_id
+			},
+			'success': function (data) {
+				$('.loading').remove();
+				data = $.parseJSON(data);
+				var elm = $('.evt-call[name="' + data[0] + '"]');
+				elm.children('a').css('font-weight', 'bold');
+				// use markers
+				var markers = '<ul class="use-marker">\
+				<li rel="tooltip" title="Mark article as relevant">Relevant Article</li>\
+				<li rel="tooltip" title="Mark article as irrelevant">Irrelevant Article</li>\
+				</ul>';
+				elm.append(markers);
+				$('.use-marker li').each(function() {$(this).tooltip();});
+				$('.use-marker li').click(sendRelevance);
+				if (data[2]) {
+				elm.append('<strong>' + data[3] + '</strong><br><i>' + data[2] + '</i>');
+				} else {
+				elm.append('<strong>' + data[3] + '</strong>');
+				}
+				elm.append('<p>' + data[1] + '</p>');
+			}
 	  });
 	  $(this).attr('called', 'called');
 	} else {

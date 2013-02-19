@@ -24,7 +24,8 @@
     <div class="row">
       <div class="span5">
         <h3>Video.</h3>
-        <iframe title="YouTube video player" class="youtube-player" type="text/html" width="360" height="300" src="http://www.youtube.com/embed/1mXXPjg9-yg?rel=0" frameborder="0"></iframe>
+        Coming soon.
+        <!--<iframe title="YouTube video player" class="youtube-player" type="text/html" width="360" height="300" src="http://www.youtube.com/embed/1mXXPjg9-yg?rel=0" frameborder="0"></iframe>-->
       </div>
       <div class="span9">
         <h3>Details: An experiment on Online News Browsing.</h3>

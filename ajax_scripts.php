@@ -12,7 +12,7 @@
     case 5: send_topics(); break;
     case 6: send_actors(); break;
     default: pass();
-  } 
+  }
   
   function send_article() {
     $aid = $_GET['aid'];
@@ -42,12 +42,9 @@
     $aid = $_GET['aid'];
     $tid = $_GET['task_id'];
     $rid = $_GET['rid'];
-    $q = "SELECT * FROM `relevance` WHERE `tid`='$tid' AND `aid`='$aid' AND `rid`='$rid'";
-    $r = mysql_query($q);
-    if (mysql_num_rows($r) == 0) {
-      $q = "INSERT INTO `relevance` (`tid`, `aid`, `rid`) VALUES ('$tid', '$aid', '$rid')";
-      mysql_query($q);
-    }
+    $sid = $_GET['session'];
+    $q = "INSERT INTO `relevance` (`tid`, `aid`, `rid`, `sid`) VALUES ('$tid', '$aid', '$rid', '$sid')";
+    mysql_query($q);
   }
   
   function submit_answer() {
@@ -75,7 +72,9 @@
       $query = "SELECT * FROM `".$tname."` WHERE `aid`='$aid'";
       if ($r = mysql_query($query)) {
         $row = mysql_fetch_assoc($r);
-        $topics[$aid] = array($row['utopics'], $row['aid'], $row['adate']);
+        $patt = '/u00\d{1}\w{1}/';
+        $uactors = preg_replace_callback($patt, "add_slash", $row['uactors']);
+        $topics[$aid] = array($row['utopics'], $row['aid'], $row['adate'], ';', 'i-t', $uactors);
       }
     }
     echo json_encode($topics);
@@ -91,11 +90,12 @@
         $row = mysql_fetch_assoc($r);
         $patt = '/u00\d{1}\w{1}/';
         $uactors = preg_replace_callback($patt, "add_slash", $row['uactors']);
-        $actors[$aid] = array($uactors, $row['aid'], $row['adate']);
+        $actors[$aid] = array($uactors, $row['aid'], $row['adate'], ',', 'i-a');
       }
     }
     echo json_encode($actors);
   }
+  
   function add_slash($matches) {
     $m = array();
     $m['u002e'] = '.';
