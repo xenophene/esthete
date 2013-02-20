@@ -29,94 +29,106 @@ function get_month_code(mon) {
 $(function () { //ready function
   var currScroll = 0;
   var currEvt;
+	/* Timeline JS initialization code */
+	
+	createStoryJS({
+		type:	'timeline',
+		width:	'800',
+		height:	'600',
+		source:	timelinejsobj,
+		embed_id:	'timeline-embed'
+	});
+	
+	
+	
   /* Ref: http://code.google.com/p/simile-widgets/wiki/Timeline_EventSources */
-  var tl_el = document.getElementById("tl");
-  var eventSource1 = new Timeline.DefaultEventSource(0);
-  
-  var theme1 = Timeline.ClassicTheme.create();
-  theme1.autoWidth = true; // Set the Timeline's "width" automatically.
-                           // Set autoWidth on the Timeline's first band's theme,
-                           // will affect all bands.
-  theme1.event.track.autoWidthMargin = 1;
-  theme1.event.tape.height = 8;
-  //theme1.event.bubble.height = 300;
-  theme1.event.track.height = 15;
-  //theme1.event.instant.icon = "no-image-40.png";
-  //theme1.event.instant.iconWidth = 40;  // These are for the default stand-alone icon
-  //theme1.event.instant.iconHeight = 40;
-
-  theme1.event.highlightColors[0] = '#FFFF00';
-  theme1.timeline_start = new Date(Date.UTC(fyear, fmonth, fday));
-  theme1.timeline_stop  = new Date(Date.UTC(parseInt(tyear, 10), tmonth, tday));
-  var myear = fmonth >= 6 ? (parseInt(fyear, 10) + 1) : parseInt(fyear, 10);
-  var d = Timeline.DateTime.parseGregorianDateTime(monthNames[(fmonth + 6) % 12] + " 1 " + myear);
-  var bandInfos = [
-    Timeline.createBandInfo({
-      width:          45, // set to a minimum, autoWidth will then adjust
-      intervalUnit:   Timeline.DateTime.MONTH, 
-      intervalPixels: 100,
-      eventSource:    eventSource1,
-      /*
-      zoomIndex:      10,
-      zoomSteps:      new Array(
-        {pixelsPerInterval: 280,  unit: Timeline.DateTime.HOUR},
-        {pixelsPerInterval: 140,  unit: Timeline.DateTime.HOUR},
-        {pixelsPerInterval:  70,  unit: Timeline.DateTime.HOUR},
-        {pixelsPerInterval:  35,  unit: Timeline.DateTime.HOUR},
-        {pixelsPerInterval: 400,  unit: Timeline.DateTime.DAY},
-        {pixelsPerInterval: 200,  unit: Timeline.DateTime.DAY},
-        {pixelsPerInterval: 100,  unit: Timeline.DateTime.DAY},
-        {pixelsPerInterval:  50,  unit: Timeline.DateTime.DAY},
-        {pixelsPerInterval: 400,  unit: Timeline.DateTime.MONTH},
-        {pixelsPerInterval: 200,  unit: Timeline.DateTime.MONTH},
-        {pixelsPerInterval: 100,  unit: Timeline.DateTime.MONTH} // DEFAULT zoomIndex
-      ),
-      /*
-      eventPainter:   Timeline.CompactEventPainter,
-      eventPainterParams: {
-          iconLabelGap:     5,
-          labelRightMargin: 20,
-          
-          iconWidth:        80, // These are for per-event custom icons
-          iconHeight:       80,
-          
-          stackConcurrentPreciseInstantEvents: {
-              limit: 5,
-              moreMessageTemplate:    "%0 More Events",
-              icon:                   "no-image-80.png", // default icon in stacks
-              iconWidth:              80,
-              iconHeight:             80
-          }
-      },
-      */
-      date:           d,
-      theme:          theme1,
-      layout:         'original'  // original, overview, detailed
-    })
-    /*,
-    Timeline.createBandInfo({
-      width:          "10%", 
-      intervalUnit:   Timeline.DateTime.MONTH, 
-      intervalPixels: 100,
-      eventSource:    eventSource1,
-      date:           d,
-      theme:          theme1,
-      layout:         'overview'  // original, overview, detailed
-    })
-    */
-
-  ];
-  //bandInfos[1].syncWith = 0;
-  //bandInfos[1].highlight = true;
-
-  // create the Timeline
-  tl = Timeline.create(tl_el, bandInfos, Timeline.HORIZONTAL);
-  
-  var url = '.'; // The base url for image, icon and background image
-                 // references in the data
-  eventSource1.loadJSON(data, url);
+  //var tl_el = document.getElementById("tl");
+  //var eventSource1 = new Timeline.DefaultEventSource(0);
+  //
+  //var theme1 = Timeline.ClassicTheme.create();
+  //theme1.autoWidth = true; // Set the Timeline's "width" automatically.
+  //                         // Set autoWidth on the Timeline's first band's theme,
+  //                         // will affect all bands.
+  //theme1.event.track.autoWidthMargin = 1;
+  //theme1.event.tape.height = 8;
+  ////theme1.event.bubble.height = 300;
+  //theme1.event.track.height = 15;
+  ////theme1.event.instant.icon = "no-image-40.png";
+  ////theme1.event.instant.iconWidth = 40;  // These are for the default stand-alone icon
+  ////theme1.event.instant.iconHeight = 40;
+  //
+  //theme1.event.highlightColors[0] = '#FFFF00';
+  //theme1.timeline_start = new Date(Date.UTC(fyear, fmonth, fday));
+  //theme1.timeline_stop  = new Date(Date.UTC(parseInt(tyear, 10), tmonth, tday));
+  //var myear = fmonth >= 6 ? (parseInt(fyear, 10) + 1) : parseInt(fyear, 10);
+  //var d = Timeline.DateTime.parseGregorianDateTime(monthNames[(fmonth + 6) % 12] + " 1 " + myear);
+  //var bandInfos = [
+  //  Timeline.createBandInfo({
+  //    width:          45, // set to a minimum, autoWidth will then adjust
+  //    intervalUnit:   Timeline.DateTime.MONTH, 
+  //    intervalPixels: 100,
+  //    eventSource:    eventSource1,
+  //    /*
+  //    zoomIndex:      10,
+  //    zoomSteps:      new Array(
+  //      {pixelsPerInterval: 280,  unit: Timeline.DateTime.HOUR},
+  //      {pixelsPerInterval: 140,  unit: Timeline.DateTime.HOUR},
+  //      {pixelsPerInterval:  70,  unit: Timeline.DateTime.HOUR},
+  //      {pixelsPerInterval:  35,  unit: Timeline.DateTime.HOUR},
+  //      {pixelsPerInterval: 400,  unit: Timeline.DateTime.DAY},
+  //      {pixelsPerInterval: 200,  unit: Timeline.DateTime.DAY},
+  //      {pixelsPerInterval: 100,  unit: Timeline.DateTime.DAY},
+  //      {pixelsPerInterval:  50,  unit: Timeline.DateTime.DAY},
+  //      {pixelsPerInterval: 400,  unit: Timeline.DateTime.MONTH},
+  //      {pixelsPerInterval: 200,  unit: Timeline.DateTime.MONTH},
+  //      {pixelsPerInterval: 100,  unit: Timeline.DateTime.MONTH} // DEFAULT zoomIndex
+  //    ),
+  //    /*
+  //    eventPainter:   Timeline.CompactEventPainter,
+  //    eventPainterParams: {
+  //        iconLabelGap:     5,
+  //        labelRightMargin: 20,
+  //        
+  //        iconWidth:        80, // These are for per-event custom icons
+  //        iconHeight:       80,
+  //        
+  //        stackConcurrentPreciseInstantEvents: {
+  //            limit: 5,
+  //            moreMessageTemplate:    "%0 More Events",
+  //            icon:                   "no-image-80.png", // default icon in stacks
+  //            iconWidth:              80,
+  //            iconHeight:             80
+  //        }
+  //    },
+  //    */
+  //    date:           d,
+  //    theme:          theme1,
+  //    layout:         'original'  // original, overview, detailed
+  //  })
+  //  /*,
+  //  Timeline.createBandInfo({
+  //    width:          "10%", 
+  //    intervalUnit:   Timeline.DateTime.MONTH, 
+  //    intervalPixels: 100,
+  //    eventSource:    eventSource1,
+  //    date:           d,
+  //    theme:          theme1,
+  //    layout:         'overview'  // original, overview, detailed
+  //  })
+  //  */
+  //
+  //];
+  ////bandInfos[1].syncWith = 0;
+  ////bandInfos[1].highlight = true;
+  //
+  //// create the Timeline
+  ////tl = Timeline.create(tl_el, bandInfos, Timeline.HORIZONTAL);
+  //
+  //var url = '.'; // The base url for image, icon and background image
+  //               // references in the data
+  //eventSource1.loadJSON(data, url);
 	/* data consists of the base url echoed */
-  tl.layout(); // display the Timeline
+  //tl.layout(); // display the Timeline
   // show the date selector
   var dates = $( "#fd, #td" ).datepicker({
     minDate: new Date(fyear, 0, 1),

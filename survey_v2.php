@@ -185,7 +185,10 @@
     </div>
     -->
     <span style="padding-left:20px;font-weight:bold;color:<?php echo BLACK;?>">Timeline events around the filtered actors and topics. </span><span style="font-weight:bold;color:<?php echo PROMINENT;?>">(Events in this color are most significant)</span><br>
-    <div id="tl"></div>
+    <!--<div id="tl"></div>-->
+    <div id="timeline-embed"></div>
+    
+    
     <div class="row shift-right">
       <div class="controls span2">
         <?php if (!sizeof($articles)): ?>
@@ -200,6 +203,7 @@
       </div>
       <div class="span12" id="headline-key"></div>
     </div>
+    
     
     <div id="modal-bubble" class="modal hide fade">
       <div class="modal-header"></div>
@@ -217,6 +221,8 @@
     <script src="jquery-ui-1.8.23.custom.min.js" type="text/javascript"></script>
     <script src="jquery.multiselect.filter.min.js" type="text/javascript"></script>
     <script src="jquery.multiselect.min.js" type="text/javascript"></script>
+    <!--TimelineJS API-->
+    <script type="text/javascript" src="TimelineJS-master/compiled/js/storyjs-embed.js"></script>
     <!--Google Charting API-->
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <!--D3 Library-->

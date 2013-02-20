@@ -299,6 +299,13 @@
     }
     return implode('^', $h);
   }
+  function get_headline_text($articles, $raids) {
+    $h = array();
+    foreach ($raids as $raid) {
+      array_push($h, $articles[$raid]->get_headline());
+    }
+    return $h;
+  }
   
   function get_all_actors($articles, $raids) {
     $a = array();
@@ -457,6 +464,13 @@
     return $elems;
   }
   
+  function create_headline_anchors($h, $ids) {
+    $a = '<ul>';
+    for ($i = 0; $i < sizeof($h); $i++) {
+      $a .= '<li><a name=' . $ids[$i] . ' class=link-url>' . $h[$i] . '</a></li>';
+    }
+    return $a . '</ul>';
+  }
   /**
    * parse the period_partitions object and create a json object in the format
    * expected by TimelineJS
@@ -480,10 +494,12 @@
         $all_actors = get_all_actors($articles, $article_ids);
         $all_topics = get_all_topics($articles, $article_ids);
         $h = get_headlines($articles, $article_ids);
+        $h_text = get_headline_text($articles, $article_ids);
+        $anchors = create_headline_anchors($h_text, $article_ids);
         $h = implode(DESCRIPTION_DELIMITER, array($all_actors , $all_topics, $h));
         $c = sizeof($article_ids) >= 3 ? PROMINENT : DULL;
         $media = array(
-                    'media'   =>  '<h2>Hello, there from media</h2>',
+                    'media'   =>  $anchors,
                     'credit'  =>  '',
                     'caption' =>  ''
                     );
