@@ -7,7 +7,25 @@ var tl
   , saveReply
 	, globalActorMap
 	, globalTopicMap;
-
+function getLoadingImg() {
+	return '<ul class="loading"><li><img src="loading3.gif" alt="Loading" title="Loading"/></li></ul>';
+}
+function sendRelevance() {
+	var id = $(this).parent().parent().attr('name');
+	var rid = 0;
+	rid = $(this).attr('name');
+	$.ajax({
+		'url': 'ajax_scripts.php',
+		'method' : 'GET',
+		'data' : {
+			'fid': '2',
+			'aid': id,
+			'task_id': task_id,
+			'rid': rid,
+			'session': session
+		}
+	});
+}
 function get_month_code(mon) {
   switch(mon) {
     case 'Jan': return 0;
@@ -25,7 +43,57 @@ function get_month_code(mon) {
 	default:	return 0;
   }
 }
-
+function showModal(headercode, bodycode) {
+	var mheader = $('#modal-bubble .modal-header');
+	headercode = '<a class="close" data-dismiss="modal" aria-hidden="true"> \
+									&times;</a>' + headercode;
+	mheader.html(headercode);
+	
+	var mbody = $('#modal-bubble .modal-body');
+	mbody.html(bodycode);
+	
+	$('#modal-bubble').modal('show');
+}
+/**
+	* TimelineJS modified JS code
+	*/
+function urlclick(e) {
+	var aid = e;
+	var article_headline = $('.link-url[name=' + e + ']').html();
+	var code = '<ul><li class="evt-call"></li></ul>';
+	showModal('<h2>' + article_headline + '</h2>', code + getLoadingImg());
+	$.ajax({
+		'url': 'ajax_scripts.php',
+		'method': 'GET',
+		'data': {
+			'fid': '1',
+			'aid': aid,
+			'task_id': task_id
+		},
+		'success': function (data) {
+			$('.loading').remove();
+			data = $.parseJSON(data);
+			var elm = $('.evt-call');
+			// use markers
+			var markers = '<ul class="use-marker">\
+			<li rel="tooltip" name="1" title="Mark article as relevant for point 1">Relevant for 1</li>\
+			<li rel="tooltip" name="2" title="Mark article as relevant for point 2 (if given)">Relevant for 2</li>\
+			<li rel="tooltip" name="3" title="Mark article as relevant for point 3 (if given)">Relevant for 3</li>\
+			<li rel="tooltip" name="4" title="Mark article as irrelevant for task">Mark Irrelevant</li>\
+			</ul>';
+			elm.append(markers);
+			$('.use-marker li').each(function() {$(this).tooltip();});
+			$('.use-marker li').click(sendRelevance);
+			var date = data[3].split('-')[2] + ' ' + monthNames[parseInt(data[3].split('-')[1], 10) - 1] + ' ' + data[3].split('-')[0];
+			if (data[2]) {
+				elm.append('<strong>Date: ' + date + '</strong><br><i>' + data[2] + '</i>');
+			} else {
+				elm.append('<strong>Date: ' + date + '</strong>');
+			}
+			elm.append('<p>' + data[1] + '</p>');
+		}
+	});
+}
 $(function () { //ready function
   var currScroll = 0;
   var currEvt;
@@ -33,8 +101,8 @@ $(function () { //ready function
 	
 	createStoryJS({
 		type:	'timeline',
-		width:	'800',
-		height:	'600',
+		width:	'95%',
+		height:	'550',
 		source:	timelinejsobj,
 		embed_id:	'timeline-embed'
 	});
@@ -139,11 +207,13 @@ $(function () { //ready function
     numberOfMonths: 1,
     beforeShow: function(input, inst) {
       inst.dpDiv.css({
-        marginTop: (-input.offsetHeight - 170) + 'px', 
-        marginLeft: (-input.offsetWidth + 280) + 'px',
-        'font-size': '14px'
+        marginTop: (-input.offsetHeight - 70) + 'px', 
+        marginLeft: (-input.offsetWidth + 280) + 'px'
       });
     },
+		afterShow: function () {
+			console.log('hello');
+		},
     onSelect: function( selectedDate ) {
       var option = this.id == "fd" ? "minDate" : "maxDate",
 	      instance = $( this ).data( "datepicker" ),
@@ -252,17 +322,7 @@ $(function () { //ready function
     date.setMonth(get_month_code(d[1]));
     return date;
   }
-  function showModal(headercode, bodycode) {
-	var mheader = $('#modal-bubble .modal-header');
-	headercode = '<a class="close" data-dismiss="modal" aria-hidden="true"> \
-                  &times;</a>' + headercode;
-	mheader.html(headercode);
-	
-	var mbody = $('#modal-bubble .modal-body');
-	mbody.html(bodycode);
-	
-	$('#modal-bubble').modal('show');
-  }
+  
   Timeline.OriginalEventPainter.prototype._showBubble = function (x, y, evt) {
 		if (!evt._description) return;
 		currEvt = evt;
@@ -298,9 +358,9 @@ $(function () { //ready function
 			method: 'GET',
 			dataType: 'json',
 			data: {
-			'fid': '6',
-			'aids': aids,
-			'tid': task_id
+				'fid': '6',
+				'aids': aids,
+				'tid': task_id
 			},
 			success: successD3BubblePlot
 		});
@@ -391,16 +451,19 @@ $(function () { //ready function
 
   }
   function classes(root) {
-	var classes = [];
-  
-	function recurse(name, node) {
-	  if (node.children) node.children.forEach(function(child) { recurse(node.name, child); });
-	  else classes.push({packageName: name, className: node.name, value: node.size});
-	}
-  
-	recurse(null, root);
-	return {children: classes};
+		var classes = [];
+		
+		function recurse(name, node) {
+			if (node.children) node.children.forEach(function(child) { recurse(node.name, child); });
+			else classes.push({packageName: name, className: node.name, value: node.size});
+		}
+		
+		recurse(null, root);
+		return {children: classes};
   }
+	
+	
+	
   function showArticleList(evt) {
 		var desc = evt._description.split('|');
 		/*
@@ -537,7 +600,7 @@ $(function () { //ready function
 			if (monthAids[amonth]) monthAids[amonth].push(k);
 			else monthAids[amonth] = [k];
 			sortMonthBins[amonth]++;
-			var topics = reply[k][0].split(';');
+			var topics = reply[k][0].split(reply[k][3]);
 			if (!monthTopics[amonth])	monthTopics[amonth] = [];
 			for (var i = 0; i < topics.length; i++) {
 				var topic = topics[i];
@@ -583,7 +646,7 @@ $(function () { //ready function
 		}
 		$('#headline-key').html(code);
 		$('.legend-links').click(renderArticle);
-		dataTable.addRows(is_data);
+		dataTable.addRows(is_data.slice(0, 11));	// will not work tennis
 		var options = {
 			'title': 'Interaction Influence over time'
 		};
@@ -616,13 +679,13 @@ $(function () { //ready function
 		var monthBins = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 			, monthTopics = [];
 		
-		for (k in reply) {
+		for (var k in reply) {
 			var amonth = parseInt(reply[k][2].split('-')[1], 10) - 1;
 			monthBins[amonth]++;
-			var topics = reply[k][0].split(';');
+			var topics = reply[k][0].split(reply[k][3]);
 			if (!monthTopics[amonth])	monthTopics[amonth] = [];
 			for (var i = 0; i < topics.length; i++) {
-				var topic = topics[i];
+				var topic = $.trim(topics[i]);
 				if (!monthTopics[amonth][topic]) monthTopics[amonth][topic] = 1;
 				else monthTopics[amonth][topic]++;
 			}
@@ -632,15 +695,16 @@ $(function () { //ready function
 		dataTable.addColumn('number', 'Article Count');
 		dataTable.addColumn({type: 'string', role: 'tooltip'});
 		var is_data = [];
-		for (m in monthBins) {
+		for (var m in monthBins) {
 			var tooltip = monthTopics[m] ? assoc_array_sort(monthTopics[m]).join(', ') : '';
 			is_data.push([monthNames[m], monthBins[m], tooltip]);
 		}
-		dataTable.addRows(is_data);
+		dataTable.addRows(is_data.slice(0,11)); // why did i need this? figure out!
 		var options = {
 			'title': 'Interaction Influence over time'
 		};
 		// Instantiate and draw our chart, passing in some options.
+		
 		var chart = new google.visualization.LineChart(document.getElementById('i-s'));
 		chart.draw(dataTable, options);
 		
@@ -665,39 +729,15 @@ $(function () { //ready function
 			}
 			successD3BubblePlot(globalTopicMap);
 		}
-		var count_array = [];
-		for (var k in levels) {
-			if (!count_array[k]) count_array[k] = 1;
-			else count_array[k]++;
-			for (var l in levels[k]) {
-				var lkey = levels[k][l];
-				if (!count_array[lkey]) count_array[lkey] = 1;
-				else count_array[lkey]++;
-			}
-		}
-		level1 = [];
-		for (var k in count_array) {
-			if (count_array[k] == 1 && levels[k]) level1.push(k);
-		}
-		// show the table
-		var table = '<table class="table table-striped"><thead><tr><th>Main Topic</th><th>Sub Topics</th></thead><tbody>';
-		for (var l in level1) {
-			table += '<tr><td>' + level1[l] + '</td><td>' + levels[level1[l]].join(', ') + '</td></tr>';
-		}
-		table += '</tbody></table>';
-		$('#t-h').html(table);
+		
   }
   
-  function getLoadingImg() {
-		return '<ul class="loading"><li><img src="loading3.gif" alt="Loading" title="Loading"/></li></ul>';
-	}
 	
 	$('#go-back').click(function () {
 		$('#going-back').val('1');
-		console.log($('#going-back').val());
-		return false;
-		$('#filter-form').submit();
 		
+		console.log($('#going-back').val());
+		$('#filter-form').submit();
 	});
   
   $('#show-all-articles').click(function() {
@@ -773,22 +813,6 @@ $(function () { //ready function
 		}
   }
   
-  function sendRelevance() {
-    var id = $(this).parent().parent().attr('name');
-    var rid = 0;
-    rid = $(this).attr('name');
-    $.ajax({
-      'url': 'ajax_scripts.php',
-      'method' : 'GET',
-      'data' : {
-        'fid': '2',
-        'aid': id,
-        'task_id': task_id,
-        'rid': rid,
-				'session': session
-      }
-    });
-  }
   
   // register the answers block
   $('#turn-on').click(function () {
@@ -841,29 +865,6 @@ $(function () { //ready function
   });
   
   getDataAndPlot(plotAsLegend);
-  $(window).scroll(function () {
-		currScroll = $(window).scrollTop();
-    var p = $('#tl').offset().top;
-    var screen = $(window).scrollTop();
-    var offset = p - screen < 0 ? 0 : p - screen;
-	
-	
-    $('.timeline-band-layer-inner[name="ether-markers"]').css({
-      'top': offset + 'px',
-      'position': 'fixed', 
-      'color': '#111',
-      'font-weight': 'bold',
-      'background': '#fff'
-    });
-  });
-  function dateMarkerFix() {
-    var p = $('#tl').offset();
-    $(this).css({
-      'position': 'fixed',
-      'top':      (p.top > 0 ? p.top : 0) + 'px',
-      'color':    '#111'
-    });
-  }
   
   
   function clickListeners() {
@@ -873,15 +874,6 @@ $(function () { //ready function
   clickListeners();
   setUpFeedback();
   
-  $('.timeline-band-inner').click(function() {
-		$(window).scrollTop(currScroll);
-	});
-  $('.timeline-band-layer-inner').click(function() {
-		$(window).scrollTop($(window).scrollTop());
-  });
-  $('.timeline-event-tape').css('top', function(i, v) {
-    return (parseFloat(v) + 20) + 'px';
-  });
 });
 
 function validateEmail(email) { 

@@ -6,29 +6,46 @@ body {
 #tl {
   margin: 10px 0 0 0;
 }
+#header {
+  padding: 8px 0 2px 0;
+  margin: 0;
+  height: 25px;
+  font-size: 25px;
+  background-color: #F2B50F;
+  width: 100%;
+  text-align: center;
+  color: #FFFFFF;
+}
 .holder {
   height: 320px;
   z-index: 100;
   width: 100%;
 }
-.filters {
-  padding: 10px 0px 0 20px;
-  background: #fff;
+.filters, .gi {
+  padding: 5px 5px 0 5px;
   color: #111;
-  width: 60%;
-  max-width: 840px;
+  font-size: 13px;
+  /*width: 60%;*/
+  /*max-width: 840px;*/
   /*top: 0px;*/
   /*position: fixed;*/
   /*z-index: 100;*/
 }
-form>ol {
-  font-size: 13px;
-  margin: 0 0 10px 10px;
+.filters ol {
+  margin: 0;
+}
+#i-graph {
+  height: 200px;
+}
+#timeline-embed {
+  padding-left: 10px;
 }
 .task {
-  font-size: 15px;
+  font-size: 14px;
 }
-
+#ui-datepicker-div  {
+ z-index: 101; /* must be > than popup editor (950) */
+}
 .footer {
   font-size: 14px;
   margin: 0px;
@@ -94,8 +111,6 @@ ul {
 }
 #filter-form table {
   background: #f9f9f9;
-  max-width: 800px;
-  min-width: 600px;
 }
 #filter-form td.head {
   font-size: 12px;
@@ -133,7 +148,7 @@ ul {
   display:block;
   height:99px;
   left:51px;
-  top:260px;
+  top:20px;
   position:relative;
   float:right;
   text-indent:-9999px;

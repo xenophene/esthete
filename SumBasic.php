@@ -33,17 +33,29 @@ class SumBasic {
       }
     }
   }
-  public function __construct($str) {
+  public function __construct() {
+  }
+  private function fix_for_actors($str, $actors) {
+    foreach ($actors as $actor) {
+      $str = str_replace($actor, '<b>' . str_replace('.', '-', $actor) . '</b>',
+                         $str);
+    }
+    return $str;
+  }
+  public function set_subject($str, $actors) {
     $this->wp = array();
     $this->wh = array();
     $this->sw = array();
-    $this->p = str_replace('\n', ' ',
+    $this->_p = $this->fix_for_actors(strtolower($str), $actors);
+    $this->_p = str_replace('mr.', 'mr',
+                            str_replace('dr', 'dr', $this->_p));
+    $this->_p = str_replace('\n', ' ',
                            str_replace('.', ' . ',
-                                       str_replace(',', ' , ', $str)));
-    $this->_p = strtolower($this->p);
+                                       str_replace(',', ' , ', $this->_p)));
+    $this->_sentences = array_filter(array_map('trim', explode('.', $this->_p)));
     $this->_p = implode(' ', array_filter(explode(' ', $this->_p),
                                           array($this, 'is_not_stopword')));
-
+    
     $this->words = array_map('trim', explode(' ', $this->_p));
     $this->words = array_filter(array_map(array($this, 'clean_word'),
                                           $this->words));
@@ -53,7 +65,6 @@ class SumBasic {
     $this->word_prob();
     $this->sentence_hash();
     $this->sentence_weight();
-    
   }
   
   private function word_prob() {
@@ -114,7 +125,12 @@ class SumBasic {
     }
     
     $max_wt_sentences = array_keys($dict, max($dict));
-    
+    while ( ! isset($this->sentences[$max_wt_sentences[0]])) {
+      array_shift($max_wt_sentences);
+      if ( ! sizeof($max_wt_sentences)) {
+        return '';
+      }
+    }
     $mws = $max_wt_sentences[0];
     
     $mws_words = explode(' ', $this->sentences[$mws]);
@@ -125,13 +141,15 @@ class SumBasic {
       $this->wp[$mws_w] = pow($this->wp[$mws_w], 2);
     }
     $this->sentence_weight();
-    return $this->sentences[$mws];
+    return $this->_sentences[$mws];
   }
   
   public function run($t) { /* t -- threshold -- */
-    $summary = '';
+    $summary = '...';
     for ($i = 0; $i < $t; $i++) {
-      $summary .= $this->sum_basic();
+      $r = $this->sum_basic();
+      if (sizeof(explode(' ', $r)) > 8)
+        $summary .= $r . '...<br/>';
     }
     return $summary;
   }

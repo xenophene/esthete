@@ -44,6 +44,11 @@
     function get_body() {
       return $this->body;
     }
+    function get_clean_body() {
+      $str = str_replace('<p>', '', $this->body);
+      $str = str_replace('</p>', '', $str);
+      return $str;
+    }
     function get_headline() {
       return $this->title;
     }

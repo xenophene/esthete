@@ -68,13 +68,14 @@
     $aids = $_GET['aids'];
     $tname = get_table_name($_GET['tid']);
     $topics = array();
+    $sep = $tname == 'tagdata' ? ',' : ';';
     foreach ($aids as $aid) {
       $query = "SELECT * FROM `".$tname."` WHERE `aid`='$aid'";
       if ($r = mysql_query($query)) {
         $row = mysql_fetch_assoc($r);
         $patt = '/u00\d{1}\w{1}/';
         $uactors = preg_replace_callback($patt, "add_slash", $row['uactors']);
-        $topics[$aid] = array($row['utopics'], $row['aid'], $row['adate'], ';', 'i-t', $uactors);
+        $topics[$aid] = array($row['utopics'], $row['aid'], $row['adate'], $sep, 'i-t', $uactors);
       }
     }
     echo json_encode($topics);
