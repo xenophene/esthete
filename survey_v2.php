@@ -97,6 +97,7 @@
   $tid = $cutoff + 1;
   $period_partitions = article_periodize($articles, $ra_map, $cutoff);
   $period_partitions = create_stitched_partitions($articles, $period_partitions);
+  
   $partition_events = create_stitched_partition_events($articles, $period_partitions);
   $timelinejs_events = create_stitched_timelinejs_events($articles, $period_partitions);
   

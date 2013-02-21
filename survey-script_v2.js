@@ -60,7 +60,7 @@ function showModal(headercode, bodycode) {
 function urlclick(e) {
 	var aid = e;
 	var article_headline = $('.link-url[name=' + e + ']').html();
-	var code = '<ul><li class="evt-call"></li></ul>';
+	var code = '<ul><li name="' + aid + '" class="evt-call"></li></ul>';
 	showModal('<h2>' + article_headline + '</h2>', code + getLoadingImg());
 	$.ajax({
 		'url': 'ajax_scripts.php',
@@ -508,7 +508,7 @@ $(function () { //ready function
       }
       $('#actor-filter').multiselect('refresh');
     });
-    $('.evt-call').each(function () {$(this).children('a').tooltip();});
+    //$('.evt-call').each(function () {$(this).children('a').tooltip();});
     $('.evt-call').click(showArticles);
   }
   
@@ -751,7 +751,7 @@ $(function () { //ready function
 		}
 		headlines += '</ol>';
 		showModal(headercode, headlines);
-		$('.evt-call').each(function () {$(this).children('a').tooltip();});
+		//$('.evt-call').each(function () {$(this).children('a').tooltip();});
 		$('.evt-call').click(showArticles);
   });
 	function renderArticle() {
@@ -809,7 +809,7 @@ $(function () { //ready function
 			$(this).children('a').css('font-weight', '');
 			$(this).removeAttr('called');
 			$(this).html('<a title="Click to read this article">' + $(this).children('a').html() + '</a>');
-			$('.evt-call').each(function () {$(this).children('a').tooltip();});
+			//$('.evt-call').each(function () {$(this).children('a').tooltip();});
 		}
   }
   
@@ -868,7 +868,8 @@ $(function () { //ready function
   
   
   function clickListeners() {
-    $('#gi').click(function () {$('#detail-instructions').toggle();});
+    $('#gi').click(function () {showModal('<h2>General Instructions</h2>',
+																					$('#detail-instructions').html())});
   }
   $('.tipsy').each(function () {$(this).tooltip();});
   clickListeners();

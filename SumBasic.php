@@ -148,7 +148,7 @@ class SumBasic {
     $summary = '...';
     for ($i = 0; $i < $t; $i++) {
       $r = $this->sum_basic();
-      if (sizeof(explode(' ', $r)) > 8)
+      if (sizeof(array_filter(explode(' ', $r))) > 8)
         $summary .= $r . '...<br/>';
     }
     return $summary;

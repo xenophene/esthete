@@ -129,7 +129,7 @@ ul {
   resize: none;
 }
 .modal {
-  max-height: 500px;
+  max-height: 600px;
   overflow-y: scroll;
 }
 .feedback-panel {
