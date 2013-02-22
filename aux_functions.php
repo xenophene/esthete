@@ -478,22 +478,77 @@
     }
     return $a . '</ul>';
   }
-  function get_summary($articles, $ids, $sum_basic) {
+  function get_summary($articles, $ids, $sum_basic, $actors) {
     $full_text = '';
-    $actors = array();
     foreach ($ids as $id) {
       $full_text .= $articles[$id]->get_clean_body();
-      $actors = array_merge($actors, $articles[$id]->get_uactors());
     }
     $sum_basic->set_subject($full_text, $actors);
     $summary = $sum_basic->run(4);
     return $summary;
   }
+  function get_cluster_partitions($clusters, $articles, $actors, $indexid) {
+    if (empty($clusters)) return array();
+    
+    $min_day_gap = 10;
+    $sum_basic = new SumBasic();
+    $partitions = array();
+    $article_dbids = array();
+    $elems = array();
+    
+    foreach ($articles as $article) {
+      array_push($article_dbids, intval($article->get_id()));
+    }
+    foreach ($clusters as $cluster) {
+      $diff = array_diff($cluster, array_diff($cluster, $article_dbids));
+      if ( ! empty($diff)) array_push($partitions, $diff);
+    }
+    foreach ($partitions as $partition) {
+      $article_dbids = array_values($partition);
+      $article_ids = array();
+      foreach ($article_dbids as $article_dbid) {
+        array_push($article_ids, $indexid[$article_dbid]);
+      }
+      $startaid = $article_ids[0];
+      $endaid = end($article_ids);
+      $st = $articles[$startaid]->get_start_date_ts();
+      $et = $articles[$endaid]->get_start_date_ts();
+      $ed = ($et - $st < $min_day_gap) ?
+                              $articles[$endaid]->get_farther_end_date_timelinejs($min_day_gap) :
+                              $articles[$endaid]->get_end_date_timelinejs();
+      $all_actors = get_all_actors($articles, $article_ids);
+      $all_topics = get_all_topics($articles, $article_ids);
+      $summary = get_summary($articles, $article_ids, $sum_basic, $actors);
+      if ($summary == '...') {
+        $i++;
+        continue;
+      }
+      $h = get_headlines($articles, $article_ids);
+      $h_text = get_headline_text($articles, $article_ids);
+      $anchors = create_headline_anchors($articles, $h_text, $article_ids);
+      $h = implode(DESCRIPTION_DELIMITER, array($all_actors , $all_topics, $h));
+      $c = sizeof($article_ids) >= 3 ? PROMINENT : DULL;
+      $media = array(
+                  'media'   =>  $anchors,
+                  'credit'  =>  '',
+                  'caption' =>  ''
+                  );
+      $elem = array(
+        'startDate'   =>    $articles[$startaid]->get_start_date_timelinejs(),
+        'headline'    =>    '',
+        'endDate'     =>    $ed,
+        'text'        =>    $summary,
+        'asset'       =>    $media
+      );
+      array_push($elems, $elem);
+    }
+    return $elems;
+  }
   /**
    * parse the period_partitions object and create a json object in the format
    * expected by TimelineJS
    */
-  function create_stitched_timelinejs_events($articles, $period_partitions) {
+  function create_stitched_timelinejs_events($articles, $period_partitions, $actors) {
     $elems = array();
     $min_day_gap = 10;
     $sum_basic = new SumBasic();
@@ -512,7 +567,7 @@
                                 $articles[$endaid]->get_end_date_timelinejs();
         $all_actors = get_all_actors($articles, $article_ids);
         $all_topics = get_all_topics($articles, $article_ids);
-        $summary = get_summary($articles, $article_ids, $sum_basic);
+        $summary = get_summary($articles, $article_ids, $sum_basic, $actors);
         if ($summary == '...') {
           $i++;
           continue;
@@ -583,7 +638,7 @@
                 'headline'  =>  'News Browsing Tool',
                 'type'      =>  'default',
                 'text'      =>  'News Events throughout the Year',
-                'startDate' =>  '2012,1,1',
+                'startDate' =>  '2011,12,31',
                 'date'      =>  $timelinejs_events
               );
     $timelinejs['timeline'] = $timeline;
@@ -655,7 +710,7 @@
     while ($i < sizeof($articles)) {
       if (($articles[$i]->days_since($st) / $ws) <= 1) {
         array_push($periods[$pid], $i);
-        if (isset($period_actors[$pid])) {  
+        if (isset($period_actors[$pid])) {
           $period_actors[$pid] = array_merge($period_actors[$pid],
                                              $articles[$i]->get_uactors());
         } else {

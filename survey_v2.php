@@ -54,14 +54,15 @@
   
   $articles = array();
   $article_identifier = array();
-  
+  $indexid = array();
   for ($i = 0; $i < mysql_num_rows($r); $i++) {
     $row = mysql_fetch_assoc($r);
     $article = new Article($row);
-    //$article->remove_actors($fa);
-    //$article->remove_topics($ft);
+    $article->remove_actors($fa);
+    $article->remove_topics($ft);
     array_push($articles, $article);
     $article_identifier[$article->get_id()] = $article->get_headline();
+    $indexid[$article->get_id()] = $i;
   }
   
   // actors shown will be all those who occur. topics will be only the ones
@@ -97,11 +98,20 @@
   $tid = $cutoff + 1;
   $period_partitions = article_periodize($articles, $ra_map, $cutoff);
   $period_partitions = create_stitched_partitions($articles, $period_partitions);
-  
   $partition_events = create_stitched_partition_events($articles, $period_partitions);
-  $timelinejs_events = create_stitched_timelinejs_events($articles, $period_partitions);
   
-  $timelinejs = set_up_timelinejs($timelinejs_events);
+  $clusters = get_clusters($task_id);
+  $cluster_partitions = get_cluster_partitions($clusters, $articles, $actors, $indexid);
+  if ( ! empty($cluster_partitions)) {
+    $timelinejs = set_up_timelinejs($cluster_partitions);
+  } else {
+    $timelinejs_events = create_stitched_timelinejs_events($articles,
+                                                            $period_partitions,
+                                                            array_map('strtolower',
+                                                                       $actors)
+                                                          );
+    $timelinejs = set_up_timelinejs($timelinejs_events);
+  }
   //$jsobj['events'] = get_timeline_events($timeline_actors, $articles, $ra_map, $t_color_map, $tid);
   $jsobj['events'] = $partition_events;
   

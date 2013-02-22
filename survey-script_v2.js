@@ -625,6 +625,7 @@ $(function () { //ready function
 				keyMonth[key] = m;
 				key = String.fromCharCode(key.charCodeAt() + 1);
 			}
+			if (annoText == 'remove') annoText = '';
 			is_data.push([monthNames[m], monthBins[m], tooltip, annoText]);
 		}
 		var code = '';
@@ -787,15 +788,21 @@ $(function () { //ready function
 					elm.children('a').css('font-weight', 'bold');
 					// use markers
 					var markers = '<ul class="use-marker">\
-					<li rel="tooltip" name="1" title="Mark article as relevant for point 1">Relevant for 1</li>\
-					<li rel="tooltip" name="2" title="Mark article as relevant for point 2 (if given)">Relevant for 2</li>\
-					<li rel="tooltip" name="3" title="Mark article as relevant for point 3 (if given)">Relevant for 3</li>\
+					<li rel="tooltip" name="1" title="Mark article as relevant for point 1">\
+					Relevant for 1</li>\
+					<li rel="tooltip" name="2" title="Mark article as relevant for point 2 (if given)">\
+					Relevant for 2</li>\
+					<li rel="tooltip" name="3" title="Mark article as relevant for point 3 (if given)">\
+					Relevant for 3</li>\
 					<li rel="tooltip" name="4" title="Mark article as irrelevant for task">Mark Irrelevant</li>\
 					</ul>';
 					elm.append(markers);
 					$('.use-marker li').each(function() {$(this).tooltip();});
 					$('.use-marker li').click(sendRelevance);
-					var date = data[3].split('-')[2] + ' ' + monthNames[parseInt(data[3].split('-')[1], 10) - 1] + ' ' + data[3].split('-')[0];
+					var date = data[3].split('-')[2] + ' ' +
+									monthNames[parseInt(data[3].split('-')[1], 10) - 1] + ' ' +
+									data[3].split('-')[0];
+					
 					if (data[2]) {
 						elm.append('<strong>Date: ' + date + '</strong><br><i>' + data[2] + '</i>');
 					} else {
