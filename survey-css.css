@@ -160,6 +160,9 @@ ul {
   color: #fff;
   background-color: #ff0000;
 }
+.evt-call {
+  font-family: Georgia, "Times New Roman", Times, serif;
+}
 .evt-call a {
   cursor: pointer;
 }

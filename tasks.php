@@ -7,7 +7,7 @@
     $task_questions = array(
       0 => "Find and mark relevant articles which evidence the following statement about Pete Sampras and John McEnroe.",
       1 => "Find and mark relevant articles which verify the following statements involving <strong>Nitin Gadkari</strong>.",
-      2 => "Find and mark relevant articles which lead you to conclude one of the following statements of the sports rivalry between Andre Agassi and Pete Sampras.",
+      2 => "Find and mark relevant articles which lead you to conclude one of the following statements of the sports rivalry between Andre Agassi and Pete Sampras in the year 2000.",
       3 => "Find and mark relevant articles which bring out the following facts about news featuring <strong>Robert Vadra</strong>",
       4 => "Find and mark relevant articles which bring out the controversy sorrounding Subodh Kant Sahay and his brother SKS Ispat." ,
       5 => "Find and mark relevant articles which bring out the following facts regarding S. Swamy and P. Chidambaram.",
@@ -24,9 +24,10 @@
             'John McEnroe remarked that Sampras only played for money and personal pride over national glory'
           ),
       1 => array(
-            'Nitin Gadkari was in the news for scams, revolving around his companies',
+            'Nitin Gadkari and Narendra Modi have reported to be against each other.',
             'Nitin Gadkari played accusatory politics, blaming the government and highlighting corruption',
-            'Nitin Gadkari was in news for developmental politics, campaigning on issues not related to corruption'
+            'Nitin Gadkari was in news for developmental politics, campaigning on issues
+            not related to corruption'
           ),
       2 => array(
             'Andre Agassi dominated Pete Sampras for all of the year',

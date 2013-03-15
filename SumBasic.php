@@ -123,7 +123,7 @@ class SumBasic {
     foreach ($mpw_sentences as $mpw_sentence) {
       $dict[$mpw_sentence] = $this->sw[$mpw_sentence];
     }
-    
+    if (empty($dict)) return '';
     $max_wt_sentences = array_keys($dict, max($dict));
     while ( ! isset($this->sentences[$max_wt_sentences[0]])) {
       array_shift($max_wt_sentences);
