@@ -90,9 +90,23 @@ function urlclick(e) {
 			} else {
 				elm.append('<strong>Date: ' + date + '</strong>');
 			}
+			if (data[1].indexOf('<p>') === -1) {
+				data[1] = sprinklePTags(data[1]);
+			}
 			elm.append('<p>' + data[1] + '</p>');
 		}
 	});
+}
+function sprinklePTags(str) {
+	var sentences = str.split('.');
+	var brokenSentences = '<p>';
+	for (var i = 0; i < sentences.length; i++) {
+		if (!(i % 4)) {
+			brokenSentences += '</p><p>';
+		}
+		brokenSentences += sentences[i];
+	}
+	return brokenSentences;
 }
 $(function () { //ready function
   var currScroll = 0;
@@ -770,7 +784,6 @@ $(function () { //ready function
 	
   function showArticles() {
 		var id = $(this).attr('name');
-		console.log(id);
 		if (!$(this).attr('called')) {
 			$(this).append(getLoadingImg());
 			$.ajax({

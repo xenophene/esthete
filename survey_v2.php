@@ -51,7 +51,6 @@
   
   store_relevance($fa, $ft, $task_id);
   $r = craft_and_run_query($fa, $ft, $fd, $td, $tablename, $limit);
-  
   $articles = array();
   $article_identifier = array();
   $indexid = array();
@@ -106,8 +105,8 @@
     $timelinejs = set_up_timelinejs($cluster_partitions);
   } else {
     $timelinejs_events = create_stitched_timelinejs_events($articles,
-                                                            $period_partitions,
-                                                            array_map('strtolower',
+                                                           $period_partitions,
+                                                           array_map('strtolower',
                                                                        $actors)
                                                           );
     $timelinejs = set_up_timelinejs($timelinejs_events);

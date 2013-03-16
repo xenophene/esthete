@@ -105,7 +105,7 @@ class SumBasic {
       $s = 0;
       foreach ($words as $word) {
         $w = $this->clean_word($word);
-        if ($w === '')  continue;
+        if ($w === '' or $w === '0')  continue;
         $s += $this->wp[$w];
         $c++;
       }

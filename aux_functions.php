@@ -13,6 +13,7 @@
   
   function add_slash($matches) {
     $m = array();
+    $m['u0022'] = '"';
     $m['u002e'] = '.';
     $m['u002f'] = '/';
     $m['u002d'] = '-';
@@ -20,7 +21,11 @@
     $m['u0029'] = ')';
     $m['u0028'] = '(';
     $m['u0027'] = "'";
-    return $m[$matches[0]];
+    if (isset($m[$matches[0]])) {
+      return $m[$matches[0]];
+    } else {
+      '';
+    }
   }
   // is array subarr contained in arr, assuming both are already sorted
   function is_contained($subarr, $arr) {
@@ -593,6 +598,7 @@
         $i++;
       }
     }
+    
     return $elems;
   }
   
@@ -634,6 +640,7 @@
   
   function set_up_timelinejs($timelinejs_events) {
     $timelinejs = array();
+    
     $timeline = array(
                 'headline'  =>  'News Browsing Tool',
                 'type'      =>  'default',
