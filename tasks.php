@@ -40,9 +40,15 @@
             'Robert Vadra has not come forward to defend himself'
           ),
       4 => array(
+"What is the nature of news coverage around Subodh Kumar Sahay?<br/>-- Politics<br/>-- Corruption<br/>",
+"Was Subodh Kumar Sahay accused of influencing coal allocation through the PM?",
+"Write a summary of the key actors and companies like SKS Ispat and what was the stand of the BJP, and the response by Congress"
+
+        /*
             "Subodh Kant Sahay allegedly wrote a letter to PM recommending the illegal coal block allocation for his brother's company",
             "Subodh Kant Sahay resigned from the cabinet following the allegations and protests by the opposition",
             "The coal ministry immediately took action following the allegations and deallocated the coal-blocks of SKS Ispat"
+            */
           ),
       5 => array(
             "Swamy sought review of the decision of special court by again moving the Supreme Court against Chidambaram",
@@ -50,9 +56,14 @@
             "Supreme Court dismissed Swamy's plea for probe against Chidambaram."
           ),
       6 => array(
+        "What was the name that ISRO had done that was under scrutiny and debate in early 2012?",
+"Name the ISRO chief at the time of the controversial deal, and write a summary of the events around that time.",
+"Write a summary of ISRO's 100th mission."
+        /*
             "ISRO, India's space agency was caught in a scam related to the Defence sector",
             "ISRO was able to successfully launch its 100th PSLV, named SHAR",
             "Former ISRO chairmen got into a fued with the government"
+            */
           ),
       7 => array(
             "Saina was in news for being gifted a BMW by Sachin Tendular",
@@ -60,9 +71,15 @@
             "Saina was honoured by the PM Manmohan Singh for her performance at the Olympics",
           ),
       8 => array(
+        "Write a summary about the rape incidents reported from West Bengal during 2012. What were some reactions from WB CM towards these incidents",
+"Can you find news reports where women were reported to have killed men in response to them trying to attacking/raping them?",
+"Write a summary about the events sorrounding Pascal Mazurier during
+the year 2012."
+/*
             "Incidents of rape cases have gone up over the past year",
             "Rape cases in the state of West Bengal have been dealth with harshly",
             "Majority of politicians have openly come out and held women partly responsible in a rape case"
+            */
           ),
       9 => array(
               "The opposition has regularly called and implemented a nation bandh",
