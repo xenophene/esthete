@@ -1,5 +1,5 @@
 <?php
-  $total_tasks = 9;
+  $total_tasks = 10;
   // constants functions based on task
   
   function show_task_question($task_id) {
@@ -171,8 +171,6 @@ the year 2012."
       ),
       3 =>  array(
 array(3757,3763,3772),array(3807,2642),array(3813),array(2633),array(3709,3736,3717,3721,3727,3729),array(3741,3755,3756),array(3778,3726,3735,3759,3762),array(3799,2644,2649),array(3737,3786,3788),array(3845,3690,3834,3833,3839,3854,3676,3680,3847,3825,3842,3843,3840,3846,3848,3684,3702,3836,3675,3699,3853,3856,3681,3693,3850,3679)
-
-
       )
     );
     return isset($task_clusters[$task_id]) ? $task_clusters[$task_id] : array();

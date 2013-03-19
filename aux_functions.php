@@ -477,9 +477,11 @@
   
   function create_headline_anchors($articles, $h, $ids) {
     $a = '<ul>';
+    $class_name = sizeof($h) >= 3 ? 'prominent' : 'dull';
     for ($i = 0; $i < sizeof($h); $i++) {
       $id = $articles[$ids[$i]]->get_id();
-      $a .= '<li><a name=' . $id . ' onclick=urlclick('.$id.'); href=# class=link-url>' . $h[$i] . '</a></li>';
+      $a .= '<li><a class=' . $class_name . ' name=' . $id . ' onclick=urlclick('.$id.');
+      href=# class=link-url>' . $h[$i] . '</a></li>';
     }
     return $a . '</ul>';
   }
