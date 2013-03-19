@@ -1,12 +1,17 @@
 /*
  * this script sets up the data received from server onto the timeline
  */
-var tl
-  ,	monthNames = [ "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December" ]
-  , saveReply
-	, globalActorMap
-	, globalTopicMap;
+var tl,
+		monthNames = [ "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December" ],
+		saveReply,
+		globalActorMap,
+		globalTopicMap,
+		globalParentObj,
+		globalGrandparentObj,
+		prevATag,
+		nextATag;
+	
 function getLoadingImg() {
 	return '<ul class="loading"><li><img src="loading3.gif" alt="Loading" title="Loading"/></li></ul>';
 }
@@ -57,10 +62,19 @@ function showModal(headercode, bodycode) {
 /**
 	* TimelineJS modified JS code
 	*/
-function urlclick(e) {
-	var aid = e;
-	var article_headline = $('.link-url[name=' + e + ']').html();
-	var code = '<ul><li name="' + aid + '" class="evt-call"></li></ul>';
+function urlclick(obj, parent_obj, grandparent_obj) {
+	
+	globalParentObj = parent_obj;
+	globalGrandparentObj = grandparent_obj;
+	
+	if (parent_obj.tagName === 'H3') {
+		return;
+	}
+	
+	var aid = obj.name,
+			article_headline = obj.innerHTML,
+			code = '<ul><li name="' + aid + '" class="evt-call"></li></ul>';
+			
 	showModal('<h2>' + article_headline + '</h2>', code + getLoadingImg());
 	$.ajax({
 		'url': 'ajax_scripts.php',
@@ -94,6 +108,33 @@ function urlclick(e) {
 				data[1] = sprinklePTags(data[1]);
 			}
 			elm.append('<p>' + data[1] + '</p>');
+			
+			/* AND NOW BEGINS THE BIGGEST HACK IN THE HISTORY OF MANKIND */
+			var a_tags = grandparent_obj.getElementsByTagName('a'),
+					event_aids = [];
+			
+			for (var i = 0; i < a_tags.length; i++ ) {
+				event_aids.push(a_tags[i].name);
+			}
+			
+			var thisIndex = $.inArray(aid, event_aids),
+					prevIndex = thisIndex - 1,
+					nextIndex = thisIndex + 1;
+					
+			var navigationCode = '<ul>';
+			if (prevIndex >= 0) {
+				prevATag = a_tags[prevIndex];
+				navigationCode += '<li><a class="pointer" onclick="urlclick(prevATag, globalParentObj, \
+											globalGrandparentObj)">Previous Article in Story</a></li>';
+			}
+			if (nextIndex < a_tags.length) {
+				nextATag = a_tags[nextIndex];
+				navigationCode += '<li><a class="pointer" onclick="urlclick(nextATag, globalParentObj, \
+											globalGrandparentObj)">Next Article in Story</a></li>';
+			}
+			navigationCode += '</ul>';
+			
+			$('#modal-bubble .modal-footer').html(navigationCode);
 		}
 	});
 }
@@ -111,7 +152,7 @@ function sprinklePTags(str) {
 $(function () { //ready function
   var currScroll = 0;
   var currEvt;
-	/* Timeline JS initialization code */
+	/* TimelineJS initialization code */
 	
 	createStoryJS({
 		type:	'timeline',
@@ -120,6 +161,8 @@ $(function () { //ready function
 		source:	timelinejsobj,
 		embed_id:	'timeline-embed'
 	});
+	
+	
 	
 	
 	

@@ -35,13 +35,13 @@
 .vco-storyjs .vco-feature blockquote,.vco-storyjs .vco-feature blockquote p{color:#000000;}
 .vco-storyjs .date a,.vco-storyjs .title a{color:#999999;}
 .vco-storyjs .hyphenate{-webkit-hyphens:auto;-moz-hyphens:auto;-ms-hyphens:auto;hyphens:auto;word-wrap:break-word;}
-.vco-storyjs h1,.vco-storyjs h2,.vco-storyjs h3,.vco-storyjs h4,.vco-storyjs h5,.vco-storyjs h6{font-weight:normal;color:#000000;text-transform:none;}.vco-storyjs h1 a,.vco-storyjs h2 a,.vco-storyjs h3 a,.vco-storyjs h4 a,.vco-storyjs h5 a,.vco-storyjs h6 a{color:#999999;}
+.vco-storyjs h1,.vco-storyjs h2,.vco-storyjs h3,.vco-storyjs h4,.vco-storyjs h5,.vco-storyjs h6{font-weight:normal;color:#000000;text-transform:none;}.vco-storyjs h1 a,.vco-storyjs h2 a,.vco-storyjs h3 a,.vco-storyjs h4 a,.vco-storyjs h5 a,.vco-storyjs h6 a{/*color:#999999;*/}
 .vco-storyjs h1 small,.vco-storyjs h2 small,.vco-storyjs h3 small,.vco-storyjs h4 small,.vco-storyjs h5 small,.vco-storyjs h6 small{color:#999999;}
 .vco-storyjs h1.date,.vco-storyjs h2.date,.vco-storyjs h3.date,.vco-storyjs h4.date,.vco-storyjs h5.date,.vco-storyjs h6.date{font-weight:bold;}
 .vco-storyjs h2.start{font-size:36px;line-height:38px;margin-bottom:15px;}
 .vco-storyjs h1{margin-bottom:15px;font-size:32px;line-height:34px;}.vco-storyjs h1 small{font-size:18px;}
 .vco-storyjs h2{margin-bottom:15px;font-size:28px;line-height:30px;}.vco-storyjs h2 small{font-size:14px;line-height:16px;}
-.vco-storyjs h2.date{font-size:16px;line-height:18px;margin-bottom:3.75px;color:#999999;}
+.vco-storyjs h2.date{font-size:16px;line-height:18px;margin-bottom:3.75px;color:#000;}
 .vco-storyjs h3,.vco-storyjs h4,.vco-storyjs h5,.vco-storyjs h6{line-height:40px;}.vco-storyjs h3 .active,.vco-storyjs h4 .active,.vco-storyjs h5 .active,.vco-storyjs h6 .active{color:#0088cc;}
 .vco-storyjs h3{font-size:28px;line-height:30px;}.vco-storyjs h3 small{font-size:14px;}
 .vco-storyjs h4{font-size:20px;line-height:22px;}.vco-storyjs h4 small{font-size:12px;}
@@ -280,5 +280,5 @@
 @media screen and (-webkit-max-device-pixel-ratio:1){}@media only screen and (-webkit-min-device-pixel-ratio:1.5),only screen and (-o-min-device-pixel-ratio:3/2),only screen and (min--moz-device-pixel-ratio:1.5),only screen and (min-device-pixel-ratio:1.5){}@media screen and (max-device-width:480px) and (orientation:portrait){.storyjs-embed.full-embed{height:557px !important;width:320px !important;}.storyjs-embed.full-embed .vco-feature{height:356px !important;}}@media screen and (max-device-width:480px) and (orientation:landscape){.storyjs-embed.full-embed{height:409px !important;width:480px !important;}.storyjs-embed.full-embed .vco-feature{height:208px !important;}}@media screen and (min-device-width:481px) and (orientation:portrait){}@media screen and (min-device-width:481px) and (orientation:landscape){}@media (max-width:480px){}@media only screen and (max-width:480px){}
 h3>.prominent {
   background-color: #ffee00;
-  color: #000 !important;
+  font-weight: bold;
 }

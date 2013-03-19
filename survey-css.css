@@ -212,6 +212,6 @@ text {
 .shift-right {
   padding-left: 20px;
 }
-.legend-links {
+.legend-links, .pointer {
   cursor: pointer;
 }
