@@ -134,7 +134,7 @@ function urlclick(obj, parent_obj, grandparent_obj) {
 			}
 			navigationCode += '</ul>';
 			
-			$('#modal-bubble .modal-footer').html(navigationCode);
+			$('#modal-bubble .modal-header').append(navigationCode);
 		}
 	});
 }

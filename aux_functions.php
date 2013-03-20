@@ -642,12 +642,13 @@
   
   function set_up_timelinejs($timelinejs_events) {
     $timelinejs = array();
-    
+    $start_date = sizeof($timelinejs_events) ?
+                $timelinejs_events[0]['startDate'] : '2011,12,31';
     $timeline = array(
                 'headline'  =>  'News Browsing Tool',
                 'type'      =>  'default',
                 'text'      =>  'News Events throughout the Year',
-                'startDate' =>  '2011,12,31',
+                'startDate' =>  $start_date,
                 'date'      =>  $timelinejs_events
               );
     $timelinejs['timeline'] = $timeline;
