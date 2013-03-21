@@ -5,16 +5,26 @@
   function show_task_question($task_id) {
     
     $task_questions = array(
-      0 => "Find and mark relevant articles which evidence the following statement about Pete Sampras and John McEnroe.",
-      1 => "Find and mark relevant articles which verify the following statements involving <strong>Nitin Gadkari</strong>.",
-      2 => "Find and mark relevant articles which lead you to conclude one of the following statements of the sports rivalry between Andre Agassi and Pete Sampras in the year 2000.",
-      3 => "Find and mark relevant articles which bring out the following facts about news featuring <strong>Robert Vadra</strong>",
-      4 => "Find and mark relevant articles which bring out the controversy sorrounding Subodh Kant Sahay and his brother SKS Ispat." ,
-      5 => "Find and mark relevant articles which bring out the following facts regarding S. Swamy and P. Chidambaram.",
-      6 => "Find and mark relevant articles for each of the following facts regarding recent developments in India's space program.",
-      7 => "Find and mark relevant articles which bring out the following events involving Saina Nehwal last year.",
-      8 => "Find and mark articles that capture the following facts regarding stories around rape cases in India",
-      9 => "Find articles which portray how different sections of society have reacted to the frequent petrol price hikes in the past"
+      0 => "Tennis in the year 2000"//"Find and mark relevant articles which evidence the following statement about Pete Sampras and John McEnroe."
+      ,
+      1 => "Nitin Gadkari's News Coverage in 2012"//"Find and mark relevant articles which verify the following statements involving <strong>Nitin Gadkari</strong>."
+      ,
+      2 => "Andre Agassi and Pete Samprass News Coverage"//"Find and mark relevant articles which lead you to conclude one of the following statements of the sports rivalry between Andre Agassi and Pete Sampras in the year 2000."
+      ,
+      3 => "Robert Vadra's News Coverage in 2012"//"Find and mark relevant articles which bring out the following facts about news featuring <strong>Robert Vadra</strong>"
+      ,
+      4 => "Subodh Kant Sahay News Coverage"//"Find and mark relevant articles which bring out the controversy sorrounding Subodh Kant Sahay and his brother SKS Ispat."
+      ,
+      5 => "News Coverage around Swamy and Chidambaram"//"Find and mark relevant articles which bring out the following facts regarding S. Swamy and P. Chidambaram."
+      ,
+      6 => "ISRO's News Coverage in 2012"//"Find and mark relevant articles for each of the following facts regarding recent developments in India's space program."
+      ,
+      7 => "Saina Nehwal's News Coverage in 2012"//"Find and mark relevant articles which bring out the following events involving Saina Nehwal last year."
+      ,
+      8 => "Rape Incidents and News Stories in 2012"//"Find and mark articles that capture the following facts regarding stories around rape cases in India"
+      ,
+      9 => "News Stories around Petrol prices in 2012"//"Find articles which portray how different sections of society have reacted to the frequent petrol price hikes in the past"
+      ,
     );
     echo $task_questions[$task_id];
   }
@@ -120,16 +130,16 @@ the year 2012."
   );
   $task_end_date = array(
     0 => '2000-12-31',
-    1 => '2012-11-31',
+    1 => '2012-12-31',
     2 => '2000-12-31',
-    3 => '2012-11-31',
-    4 => '2012-11-31',
-    5 => '2012-11-31',
-    6 => '2012-11-31',
-    7 => '2012-11-31',
-    8 => '2012-11-31',
-    9 => '2012-11-31',
-    10 => '2012-11-31'
+    3 => '2012-12-31',
+    4 => '2012-12-31',
+    5 => '2012-12-31',
+    6 => '2012-12-31',
+    7 => '2012-12-31',
+    8 => '2012-12-31',
+    9 => '2012-12-31',
+    10 => '2012-12-31'
   );
   
   function get_actors($task_id) {

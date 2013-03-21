@@ -95,7 +95,7 @@ function urlclick(obj, parent_obj, grandparent_obj) {
 			<li rel="tooltip" name="3" title="Mark article as relevant for point 3 (if given)">Relevant for 3</li>\
 			<li rel="tooltip" name="4" title="Mark article as irrelevant for task">Mark Irrelevant</li>\
 			</ul>';
-			elm.append(markers);
+			//elm.append(markers);
 			$('.use-marker li').each(function() {$(this).tooltip();});
 			$('.use-marker li').click(sendRelevance);
 			var date = data[3].split('-')[2] + ' ' + monthNames[parseInt(data[3].split('-')[1], 10) - 1] + ' ' + data[3].split('-')[0];
@@ -452,8 +452,11 @@ $(function () { //ready function
 		var actor_counts = [];
 		for (k in data) {
 			data[k][0].split(sep).map(function(str) {
-				if (actor_counts[str]) actor_counts[str]++;
-				else actor_counts[str] = 1;
+				if (actor_counts[str]) {
+					actor_counts[str]++;
+				} else {
+					actor_counts[str] = 1;
+				}
 			});
 		}
 		var values = [];
@@ -541,8 +544,11 @@ $(function () { //ready function
 			$('#actor-filter option:selected').each(function() {gactors.push($(this).val())});
 			desc[0] = gactors.join('^');
 		}
-    headercode += '<strong><u>Sub-Actors</u></strong>: ' + desc[0].split('^').map(toTitleCase).join(', ');
-		headercode += '<br><strong><u>Sub-Topics</u></strong>: ' + desc[1].split('^').map(toTitleCase).join(', ');
+    headercode += '<strong><u>Sub-Actors</u></strong>: ' +
+									desc[0].split('^').map(toTitleCase).join(', ');
+		headercode += '<br><strong><u>Sub-Topics</u></strong>: ' +
+									desc[1].split('^').map(toTitleCase).join(', ');
+									
 		var headlines = '<em>Articles relevant to this theme (Click to read full):</em><ol>';
 	
     var descs = desc[2].toString();
@@ -704,12 +710,12 @@ $(function () { //ready function
 		}
 		$('#headline-key').html(code);
 		$('.legend-links').click(renderArticle);
-		dataTable.addRows(is_data.slice(0, 11));	// will not work tennis
+		dataTable.addRows(is_data.slice(0, 12));	// will not work tennis
 		var options = {
 			'title': 'Interaction Influence over time'
 		};
 		// Instantiate and draw our chart, passing in some options.
-		var chart = new google.visualization.LineChart(document.getElementById('i-graph'));
+		var chart = new google.visualization.LineChart(document.getElementById('mpe-chart-chart'));
 		chart.draw(dataTable, options);
 	}
 	
@@ -852,7 +858,7 @@ $(function () { //ready function
 					Relevant for 3</li>\
 					<li rel="tooltip" name="4" title="Mark article as irrelevant for task">Mark Irrelevant</li>\
 					</ul>';
-					elm.append(markers);
+					//elm.append(markers);
 					$('.use-marker li').each(function() {$(this).tooltip();});
 					$('.use-marker li').click(sendRelevance);
 					var date = data[3].split('-')[2] + ' ' +
@@ -928,6 +934,86 @@ $(function () { //ready function
   });
   
   getDataAndPlot(plotAsLegend);
+	
+	function parseDataForPopularity() {
+		var _data = data;
+		/*
+		 * loop through the data variable, get the actor & topic, counts
+		 * sort and display as list
+		*/
+		var mpa_list = {},
+				mpt_list = {};
+		for (var k in _data.events) {
+			var actors = _data.events[k].description.split('|')[0].split('^');
+			for (var i = 0; i < actors.length; i++) {
+				if (mpa_list[actors[i]]) {
+					mpa_list[actors[i]]++;
+				} else {
+					mpa_list[actors[i]] = 1;
+				}
+			}
+			var topics = _data.events[k].description.split('|')[1].split('^');
+			for (var i = 0; i < topics.length; i++) {
+				if (mpt_list[topics[i]]) {
+					mpt_list[topics[i]]++;
+				} else {
+					mpt_list[topics[i]] = 1;
+				}
+			}
+		}
+		var mpa_list_array = [],
+				mpt_list_array = [];
+				
+		for (var k in mpa_list) {
+			mpa_list_array.push([k, mpa_list[k]]);
+		}
+		for (var k in mpt_list) {
+			mpt_list_array.push([k, mpt_list[k]]);
+		}
+		mpa_list_array.sort(function(b,a) {
+			return a[1]-b[1];
+		});
+		mpt_list_array.sort(function(b,a) {
+			return a[1]-b[1];
+		});
+		var code = '<ul>',
+				threshold = 20;
+		for (var i = 0; i < mpa_list_array.length && i < threshold; i++) {
+			code += '<li><a href="#" id="' + mpa_list_array[i][0] + '" class="add-actor">' +
+							toTitleCase(mpa_list_array[i][0]) + '</a></li>';
+		}
+		code += '</ul>';
+		$('#mpa-list').append(code);
+		
+		code = '<ul>';
+		for (var i = 0; i < mpt_list_array.length && i < threshold; i++) {
+			code += '<li><a href="#" id="' + mpt_list_array[i][0] + '" class="add-topic">' +
+							toTitleCase(mpt_list_array[i][0]) + '</a></li>';
+		}
+		code += '</ul>';
+		$('#mpt-list').append(code);
+		
+		$('.add-topic').click(function () {
+      var e = $("#topic-filter option[value='"+$.trim($(this).attr('id'))+"']");
+      if (e.attr("selected") == "selected") {
+        e.removeAttr("selected");
+      } else {
+        e.attr("selected", "selected");
+      }
+      $('#actor-filter').multiselect('refresh');
+    });
+		$('.add-actor').click(function () {
+      var e = $("#actor-filter option[value='"+$.trim($(this).attr('id'))+"']");
+      if (e.attr("selected") == "selected") {
+        e.removeAttr("selected");
+      } else {
+        e.attr("selected", "selected");
+      }
+      $('#actor-filter').multiselect('refresh');
+    });
+		
+	}
+	parseDataForPopularity();
   
   
   function clickListeners() {

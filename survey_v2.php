@@ -117,12 +117,15 @@
 ?>
     <!--<div class="holder"></div> A trick to make always visible filter-->
     <!--    The filter system is in a grid. -->
-    <div id="header">News Browsing Tool</div>
+    <div id="header">News Browsing Tool - <?php show_task_question($task_id);?></div>
     <div class="filters row">
-      <div class="span7">
-        <span class="task tipsy" rel="tooltip" title="Task Question" data-placement="bottom"><strong>Task Question: </strong> <?php show_task_question($task_id); ?></span>
-          <?php show_task_options($task_id, $_POST);?>
+      <!--
+      <div class="span3">
+        <span class="task tipsy" rel="tooltip" title="Task Question" data-placement="bottom">
+          <?php //show_task_question($task_id); ?></span>
+          <?php //show_task_options($task_id, $_POST);?>
       </div>
+      -->
       <div class="span7">
         <form method="POST" id="filter-form">
           <table>
@@ -183,6 +186,17 @@
           </p>
           -->
         </form>
+      </div>
+      <div class="span3" id="mpa-list">
+        <strong><u>Most Popular Actors</u></strong>
+      </div>
+      <div class="span3" id="mpt-list">
+        <strong><u>Most Popular Topics</u></strong>
+        
+      </div>
+      <div class="span4" id="mpe-chart">
+        <strong><u>Overall News Coverage</u></strong>
+        <div id="mpe-chart-chart"></div>
       </div>
     </div>
     <div class="time tipsy" title="Time elapsed in this session" data-placement="left">

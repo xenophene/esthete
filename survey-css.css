@@ -181,11 +181,11 @@ a:hover{color:#005580;text-decoration:underline;}
 .span10{width:780px;}
 .span9{width:700px;}
 .span8{width:620px;}
-.span7{width:540px;}
+.span7{width:520px;}
 .span6{width:460px;}
 .span5{width:380px;}
-.span4{width:300px;}
-.span3{width:220px;}
+.span4{width:230px;}
+.span3{width:170px;}
 .span2{width:140px;}
 .span1{width:60px;}
 .background {
@@ -215,4 +215,10 @@ text {
 }
 .legend-links, .pointer {
   cursor: pointer;
+}
+#mpa-list, #mpt-list, #mpe-chart {
+  overflow-y: auto;
+  overflow-x: auto;
+  height: 120px;
+  font-weight: bold;
 }
