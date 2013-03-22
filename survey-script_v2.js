@@ -4,6 +4,8 @@
 var tl,
 		monthNames = [ "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December" ],
+		monthShortNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ],
 		saveReply,
 		globalActorMap,
 		globalTopicMap,
@@ -100,9 +102,9 @@ function urlclick(obj, parent_obj, grandparent_obj) {
 			$('.use-marker li').click(sendRelevance);
 			var date = data[3].split('-')[2] + ' ' + monthNames[parseInt(data[3].split('-')[1], 10) - 1] + ' ' + data[3].split('-')[0];
 			if (data[2]) {
-				elm.append('<strong>Date: ' + date + '</strong><br><i>' + data[2] + '</i>');
+				elm.append('<br><strong>Date: ' + date + '</strong><br><i>' + data[2] + '</i>');
 			} else {
-				elm.append('<strong>Date: ' + date + '</strong>');
+				elm.append('<br><strong>Date: ' + date + '</strong>');
 			}
 			if (data[1].indexOf('<p>') === -1) {
 				data[1] = sprinklePTags(data[1]);
@@ -153,14 +155,15 @@ $(function () { //ready function
   var currScroll = 0;
   var currEvt;
 	/* TimelineJS initialization code */
-	
-	createStoryJS({
-		type:	'timeline',
-		width:	'95%',
-		height:	'550',
-		source:	timelinejsobj,
-		embed_id:	'timeline-embed'
-	});
+	if (timelinejsobj.timeline.date) {
+		createStoryJS({
+			type:	'timeline',
+			width:	'95%',
+			height:	'550',
+			source:	timelinejsobj,
+			embed_id:	'timeline-embed'
+		});
+	}
 	
 	
 	
@@ -689,7 +692,7 @@ $(function () { //ready function
 				key = String.fromCharCode(key.charCodeAt() + 1);
 			}
 			if (annoText == 'remove') annoText = '';
-			is_data.push([monthNames[m], monthBins[m], tooltip, annoText]);
+			is_data.push([monthShortNames[m], monthBins[m], tooltip, annoText]);
 		}
 		var code = '';
 		for (k in keyMonth) {
@@ -712,7 +715,11 @@ $(function () { //ready function
 		$('.legend-links').click(renderArticle);
 		dataTable.addRows(is_data.slice(0, 12));	// will not work tennis
 		var options = {
-			'title': 'Interaction Influence over time'
+			'title': 'Interaction Influence over time',
+			'height': 90,
+			'hAxis': {
+				'showTextEvery': 3
+			}
 		};
 		// Instantiate and draw our chart, passing in some options.
 		var chart = new google.visualization.LineChart(document.getElementById('mpe-chart-chart'));
@@ -866,9 +873,9 @@ $(function () { //ready function
 									data[3].split('-')[0];
 					
 					if (data[2]) {
-						elm.append('<strong>Date: ' + date + '</strong><br><i>' + data[2] + '</i>');
+						elm.append('<br><strong>Date: ' + date + '</strong><br><i>' + data[2] + '</i>');
 					} else {
-						elm.append('<strong>Date: ' + date + '</strong>');
+						elm.append('<br><strong>Date: ' + date + '</strong>');
 					}
 					elm.append('<p>' + data[1] + '</p>');
 				}
@@ -979,16 +986,16 @@ $(function () { //ready function
 		var code = '<ul>',
 				threshold = 20;
 		for (var i = 0; i < mpa_list_array.length && i < threshold; i++) {
-			code += '<li><a href="#" id="' + mpa_list_array[i][0] + '" class="add-actor">' +
-							toTitleCase(mpa_list_array[i][0]) + '</a></li>';
+			code += '<li><a href="#" title="Add actor to filter" id="' + mpa_list_array[i][0] +
+							'" class="add-actor tipsy">' + toTitleCase(mpa_list_array[i][0]) + '</a></li>';
 		}
 		code += '</ul>';
 		$('#mpa-list').append(code);
 		
 		code = '<ul>';
 		for (var i = 0; i < mpt_list_array.length && i < threshold; i++) {
-			code += '<li><a href="#" id="' + mpt_list_array[i][0] + '" class="add-topic">' +
-							toTitleCase(mpt_list_array[i][0]) + '</a></li>';
+			code += '<li><a href="#" title="Add topic to filter" id="' + mpt_list_array[i][0] +
+							'" class="add-topic tipsy">' + toTitleCase(mpt_list_array[i][0]) + '</a></li>';
 		}
 		code += '</ul>';
 		$('#mpt-list').append(code);
@@ -1000,7 +1007,7 @@ $(function () { //ready function
       } else {
         e.attr("selected", "selected");
       }
-      $('#actor-filter').multiselect('refresh');
+      $('#topic-filter').multiselect('refresh');
     });
 		$('.add-actor').click(function () {
       var e = $("#actor-filter option[value='"+$.trim($(this).attr('id'))+"']");

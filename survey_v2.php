@@ -182,7 +182,7 @@
                   else $answer = 
                   "Your answer...(Kindly include your name as well). If you already know the answer, please skip this task.";*/
             ?>
-            <textarea rel="tooltip" title="Enter your answer here. Incase you find this task difficult, please enter your feedback here." name="answer-text" id="answer-text" placeholder="<?php echo $answer;?>" cols=120 rows=2 class="ui-widget ui-state-default ui-corner-all no-resize tipsy"></textarea>
+            <textarea rel="tooltip" title="Enter your answer here. Incase you find this task difficult, please enter your feedback here." name="answer-text" id="answer-text" placeholder="<?php //echo $answer;?>" cols=120 rows=2 class="ui-widget ui-state-default ui-corner-all no-resize tipsy"></textarea>
           </p>
           -->
         </form>
@@ -217,7 +217,7 @@
       <div class="span12 gi">
         <a id="gi" href="#" rel="tooltip" data-placement="right" class="tipsy small" data-original-title="Click to read some general instructions. Click again to hide.">General Instructions</a>
         <span class="hide" id="detail-instructions">
-        For the above task, you have to find relevant articles for one or more of the points. When you find a relevant article, you should mark it as relevant for the corresponding point. Clicking on a bar on the timeline below displays more information about it. The select boxes below are for filtering on people, topics and from-to date. A timer is kept to track this session. <em>Please avoid pressing Back, instead deselect the filters.</em>
+        For the specific theme of this task, you are requested to navigate and browse through the articles, using the tool. You would later be asked to rate the tool on usability, quality of content returned, coverage of content, etc. Clicking on a bar on the timeline displays more information about it. The select boxes below are for filtering on people, topics and from-to date. A timer is kept to track this session. <em>Please avoid pressing Back, instead deselect the filters.</em>
         </span>
       </div>
       
@@ -228,9 +228,8 @@
     <div class="row shift-right">
       <div class="controls span2">
         <?php if (!sizeof($articles)): ?>
-          <span style="font-weight:bold;"><?php  echo 'No Articles Found.';?></span>
+          <span style="font-weight:bold;">No Articles Found. Please click Back or remove some topics or actors from the filter.</span><br>
         <?php endif; ?>
-        <br>
         <button rel="tooltip" data-placement="right" title="Submit this answer." id="submit-answer" class="ui-widget ui-state-default ui-corner-all tipsy">finish task</button>
         <button rel="tooltip" data-placement="right" title="Skip this task and go back to the survey home page." id="skip-task" class="ui-widget ui-state-default ui-corner-all tipsy">skip task</button>
         <!--<button rel="tooltip" title="Aggregation tries to aggregate all the articles related by one or more common actors and topics into a single black block." id="turn-on" class="ui-widget ui-state-default ui-corner-all tipsy">toggle aggregation feature</button>-->
@@ -241,12 +240,13 @@
     </div>
     
     <!--  Placeholder for Google Maps on the annual interaction -->
+    <!--
     <div class="row tipsy">
       <div class="span12" id="i-graph">
         <ul class="loading"><li><img src="loading3.gif" alt="Loading" title="Loading"/></li></ul>
       </div>
     </div>
-    
+    -->
     <div id="modal-bubble" class="modal hide fade">
       <div class="modal-header"></div>
       <div class="modal-body"></div>

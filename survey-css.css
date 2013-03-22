@@ -44,7 +44,7 @@ body {
   font-size: 14px;
 }
 #ui-datepicker-div  {
- z-index: 101; /* must be > than popup editor (950) */
+ z-index: 101 !important; /* must be > than popup editor (950) */
 }
 .footer {
   font-size: 14px;

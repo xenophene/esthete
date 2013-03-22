@@ -37,8 +37,19 @@ class SumBasic {
   }
   private function fix_for_actors($str, $actors) {
     foreach ($actors as $actor) {
-      $str = str_replace($actor, '<b>' . str_replace('.', '-', $actor) . '</b>',
+      $str = str_replace($actor, '<b>' . str_replace('.', '-', ucwords($actor)) . '</b>',
                          $str);
+    }
+    return $str;
+  }
+  private function replace_dot_words($str) {
+    $words = array(
+                   'mr.'  =>  'mr',
+                   'dr.'  =>  'dr',
+                   'ms.'  =>  'ms',
+                  );
+    foreach ($words as $word  =>  $replacement) {
+      $str = str_replace($word, $replacement, $str);
     }
     return $str;
   }
@@ -47,8 +58,7 @@ class SumBasic {
     $this->wh = array();
     $this->sw = array();
     $this->_p = $this->fix_for_actors(strtolower($str), $actors);
-    $this->_p = str_replace('mr.', 'mr',
-                            str_replace('dr', 'dr', $this->_p));
+    $this->_p = $this->replace_dot_words($this->_p);
     $this->_p = str_replace('\n', ' ',
                            str_replace('.', ' . ',
                                        str_replace(',', ' , ', $this->_p)));
