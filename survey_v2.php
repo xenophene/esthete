@@ -54,16 +54,22 @@
   $articles = array();
   $article_identifier = array();
   $indexid = array();
+  $actor_count = array();
+  $topic_count = array();
+  
   for ($i = 0; $i < mysql_num_rows($r); $i++) {
     $row = mysql_fetch_assoc($r);
     $article = new Article($row);
     $article->remove_actors($fa);
     $article->remove_topics($ft);
+    $actor_count = $article->update_actor_count($actor_count);
+    $topic_count = $article->update_topic_count($topic_count);
+    
     array_push($articles, $article);
     $article_identifier[$article->get_id()] = $article->get_headline();
     $indexid[$article->get_id()] = $i;
   }
-  
+  $counts = setup_top_counts($actor_count, $topic_count);
   // actors shown will be all those who occur. topics will be only the ones
   // not contained, so that a natural topic hierarchy is visualized
   $ra_map = reverse_actor_map($articles);
@@ -71,9 +77,11 @@
   // take an array slice here.
   
   $rt_map = reverse_topic_map($articles);
-  $topic_containers = get_containers($rt_map);
+  //$topic_containers = get_containers($rt_map);
+  $topic_containers = array();
   
-  $level1 = get_first_level($topic_containers);
+  
+  //$level1 = get_first_level($topic_containers);
   
   $timeline_topics = array_keys($rt_map);
   //$t_color_map = assign_colors($timeline_topics);
@@ -83,7 +91,6 @@
   }
   $topics = enrich_tags($topics, $articles, 1);
   $actors = enrich_tags($actors, $articles, 0);
-  
 
   // go about showing these events. for each actors in ra_map, show the articles
   // that talk about the actor, by the topic mentioned. have a further description
@@ -97,7 +104,8 @@
   $tid = $cutoff + 1;
   $period_partitions = article_periodize($articles, $ra_map, $cutoff);
   $period_partitions = create_stitched_partitions($articles, $period_partitions);
-  $partition_events = create_stitched_partition_events($articles, $period_partitions);
+  
+  //$partition_events = create_stitched_partition_events($articles, $period_partitions);
   
   $clusters = get_clusters($task_id);
   $cluster_partitions = get_cluster_partitions($clusters, $articles, $actors, $indexid);
@@ -112,7 +120,9 @@
     $timelinejs = set_up_timelinejs($timelinejs_events);
   }
   //$jsobj['events'] = get_timeline_events($timeline_actors, $articles, $ra_map, $t_color_map, $tid);
-  $jsobj['events'] = $partition_events;
+  //$jsobj['events'] = $partition_events;
+  
+  $jsobj['events'] = array();
   
 ?>
     <!--<div class="holder"></div> A trick to make always visible filter-->
@@ -275,6 +285,8 @@
       echo '<script>
       var task_id = ' . json_encode($task_id) . ';
       var data = ' . json_encode($jsobj) . ';
+      var top_actors = ' . json_encode($counts[0]) . ';
+      var top_topics = ' . json_encode($counts[1]) . ';
       var fmonth = ' . json_encode($fmonth) . ';
       var tmonth = ' . json_encode($tmonth) . ';
       var fday = ' . json_encode($fday) . ';

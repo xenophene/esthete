@@ -100,7 +100,10 @@ function urlclick(obj, parent_obj, grandparent_obj) {
 			//elm.append(markers);
 			$('.use-marker li').each(function() {$(this).tooltip();});
 			$('.use-marker li').click(sendRelevance);
-			var date = data[3].split('-')[2] + ' ' + monthNames[parseInt(data[3].split('-')[1], 10) - 1] + ' ' + data[3].split('-')[0];
+			var date = data[3].split('-')[2] + ' ' +
+								 monthNames[parseInt(data[3].split('-')[1], 10) - 1] +
+								 ' ' + data[3].split('-')[0];
+			
 			if (data[2]) {
 				elm.append('<br><strong>Date: ' + date + '</strong><br><i>' + data[2] + '</i>');
 			} else {
@@ -449,7 +452,6 @@ $(function () { //ready function
 				threshold = 10,
 				sep = data[Object.keys(data)[0]][3],
 				id = data[Object.keys(data)[0]][4];
-		
 		actors['name'] = 'actors';
 		actors['children'] = [];
 		var actor_counts = [];
@@ -943,59 +945,18 @@ $(function () { //ready function
   getDataAndPlot(plotAsLegend);
 	
 	function parseDataForPopularity() {
-		var _data = data;
-		/*
-		 * loop through the data variable, get the actor & topic, counts
-		 * sort and display as list
-		*/
-		var mpa_list = {},
-				mpt_list = {};
-		for (var k in _data.events) {
-			var actors = _data.events[k].description.split('|')[0].split('^');
-			for (var i = 0; i < actors.length; i++) {
-				if (mpa_list[actors[i]]) {
-					mpa_list[actors[i]]++;
-				} else {
-					mpa_list[actors[i]] = 1;
-				}
-			}
-			var topics = _data.events[k].description.split('|')[1].split('^');
-			for (var i = 0; i < topics.length; i++) {
-				if (mpt_list[topics[i]]) {
-					mpt_list[topics[i]]++;
-				} else {
-					mpt_list[topics[i]] = 1;
-				}
-			}
-		}
-		var mpa_list_array = [],
-				mpt_list_array = [];
-				
-		for (var k in mpa_list) {
-			mpa_list_array.push([k, mpa_list[k]]);
-		}
-		for (var k in mpt_list) {
-			mpt_list_array.push([k, mpt_list[k]]);
-		}
-		mpa_list_array.sort(function(b,a) {
-			return a[1]-b[1];
-		});
-		mpt_list_array.sort(function(b,a) {
-			return a[1]-b[1];
-		});
-		var code = '<ul>',
-				threshold = 20;
-		for (var i = 0; i < mpa_list_array.length && i < threshold; i++) {
-			code += '<li><a href="#" title="Add actor to filter" id="' + mpa_list_array[i][0] +
-							'" class="add-actor tipsy">' + toTitleCase(mpa_list_array[i][0]) + '</a></li>';
+		var code = '<ul>';
+		for (var i = 0; i < top_actors.length; i++) {
+			code += '<li><a href="#" title="Add actor to filter" id="' + top_actors[i] +
+							'" class="add-actor tipsy">' + toTitleCase(top_actors[i]) + '</a></li>';
 		}
 		code += '</ul>';
 		$('#mpa-list').append(code);
 		
 		code = '<ul>';
-		for (var i = 0; i < mpt_list_array.length && i < threshold; i++) {
-			code += '<li><a href="#" title="Add topic to filter" id="' + mpt_list_array[i][0] +
-							'" class="add-topic tipsy">' + toTitleCase(mpt_list_array[i][0]) + '</a></li>';
+		for (var i = 0; i < top_topics.length; i++) {
+			code += '<li><a href="#" title="Add topic to filter" id="' + top_topics[i] +
+							'" class="add-topic tipsy">' + toTitleCase(top_topics[i]) + '</a></li>';
 		}
 		code += '</ul>';
 		$('#mpt-list').append(code);

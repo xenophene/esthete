@@ -98,6 +98,27 @@ class Article {
     return array($this->id, $this->get_headline());
   }
   
+  function update_actor_count($actor_count) {
+    foreach ($this->get_uactors() as $actor) {
+      if (isset($actor_count[$actor])) {
+        $actor_count[$actor]++;
+      } else {
+        $actor_count[$actor] = 1;
+      }
+    }
+    return $actor_count;
+  }
+  function update_topic_count($topic_count) {
+    foreach ($this->get_utopics() as $topic) {
+      if (isset($topic_count[$topic])) {
+        $topic_count[$topic]++;
+      } else {
+        $topic_count[$topic] = 1;
+      }
+    }
+    return $topic_count;
+  }
+  
   function remove_actors($fa) {
     foreach ($fa as $a) {
       $key = array_search($a, $this->uactors);

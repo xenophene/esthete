@@ -256,7 +256,31 @@
     }
     return $colors;
   }
-  
+  function setup_top_counts($actor_count, $topic_count) {
+    arsort($actor_count);
+    arsort($topic_count);
+    $top_actors = array();
+    $top_topics = array();
+    $threshold = 20;
+    
+    $i = 0;
+    foreach ($actor_count as $actor => $count) {
+      array_push($top_actors, $actor);
+      $i++;
+      if ($i == $threshold) {
+        break;
+      }
+    }
+    $i = 0;
+    foreach ($topic_count as $topic => $count) {
+      array_push($top_topics, $topic);
+      $i++;
+      if ($i == $threshold) {
+        break;
+      }
+    }
+    return array($top_actors, $top_topics);
+  }
   
   function get_description($article) {
     $topics = $article->get_utopics();
@@ -483,7 +507,7 @@
       $a .= '<li><a class=' . $class_name . ' name=' . $id . ' onclick=urlclick(this,this.parentElement,this.parentElement.parentElement);
       href=#>' . $h[$i] . ' </a></li>';
     }
-    return $a . '</ul>';
+    return $a . '<li>Click on article links above to read full</li></ul>';
   }
   function get_summary($articles, $ids, $sum_basic, $actors) {
     $full_text = '';
@@ -530,6 +554,7 @@
         $i++;
         continue;
       }
+      $summary = 'Event summary: ' . $summary;
       $h = get_headlines($articles, $article_ids);
       $h_text = get_headline_text($articles, $article_ids);
       $anchors = create_headline_anchors($articles, $h_text, $article_ids);
@@ -579,6 +604,7 @@
           $i++;
           continue;
         }
+        $summary = '<strong>Event summary:</strong> ' . $summary;
         $h = get_headlines($articles, $article_ids);
         $h_text = get_headline_text($articles, $article_ids);
         $anchors = create_headline_anchors($articles, $h_text, $article_ids);
