@@ -105,9 +105,9 @@ function urlclick(obj, parent_obj, grandparent_obj) {
 								 ' ' + data[3].split('-')[0];
 			
 			if (data[2]) {
-				elm.append('<br><strong>Date: ' + date + '</strong><br><i>' + data[2] + '</i>');
+				elm.append('<strong>Date: ' + date + '</strong><br><i>' + data[2] + '</i>');
 			} else {
-				elm.append('<br><strong>Date: ' + date + '</strong>');
+				elm.append('<strong>Date: ' + date + '</strong>');
 			}
 			if (data[1].indexOf('<p>') === -1) {
 				data[1] = sprinklePTags(data[1]);
@@ -657,6 +657,7 @@ $(function () { //ready function
 	}
 	function plotAsLegend(reply) {
 		saveReply = reply;
+		console.log(reply);
 		if (reply.length) var year = reply[0][2].split('-')[0];
 		var monthBins = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 			, sortMonthBins = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -713,8 +714,8 @@ $(function () { //ready function
 			}
 			code += k + '. ' + headlines.join(', ') + others + '<br>';
 		}
-		$('#headline-key').html(code);
-		$('.legend-links').click(renderArticle);
+		//$('#headline-key').html(code);
+		//$('.legend-links').click(renderArticle);
 		dataTable.addRows(is_data.slice(0, 12));	// will not work tennis
 		var options = {
 			'title': 'Interaction Influence over time',
@@ -727,6 +728,8 @@ $(function () { //ready function
 		var chart = new google.visualization.LineChart(document.getElementById('mpe-chart-chart'));
 		chart.draw(dataTable, options);
 	}
+	
+	
 	
   function assoc_array_sort(obj) {
 		var tuples = [];
@@ -875,7 +878,7 @@ $(function () { //ready function
 									data[3].split('-')[0];
 					
 					if (data[2]) {
-						elm.append('<br><strong>Date: ' + date + '</strong><br><i>' + data[2] + '</i>');
+						elm.append('<br><strong>Date: ' + date + '</strong><i>' + data[2] + '</i>');
 					} else {
 						elm.append('<br><strong>Date: ' + date + '</strong>');
 					}
@@ -947,7 +950,7 @@ $(function () { //ready function
 	function parseDataForPopularity() {
 		var code = '<ul>';
 		for (var i = 0; i < top_actors.length; i++) {
-			code += '<li><a href="#" title="Add actor to filter" id="' + top_actors[i] +
+			code += '<li><a href="#" title="Click to add this actor to filter" id="' + top_actors[i] +
 							'" class="add-actor tipsy">' + toTitleCase(top_actors[i]) + '</a></li>';
 		}
 		code += '</ul>';
@@ -955,7 +958,7 @@ $(function () { //ready function
 		
 		code = '<ul>';
 		for (var i = 0; i < top_topics.length; i++) {
-			code += '<li><a href="#" title="Add topic to filter" id="' + top_topics[i] +
+			code += '<li><a href="#" title="Click to add this topic to filter" id="' + top_topics[i] +
 							'" class="add-topic tipsy">' + toTitleCase(top_topics[i]) + '</a></li>';
 		}
 		code += '</ul>';

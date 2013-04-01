@@ -222,21 +222,23 @@
     -->
     <!--<span style="padding-left:20px;font-weight:bold;color:<?php echo BLACK;?>">Timeline events around the filtered actors and topics. </span><span style="font-weight:bold;color:<?php echo PROMINENT;?>">(Events in this color are most significant)</span><br>-->
     <!--<div id="tl"></div>-->
-    <div id="timeline-embed"></div>
     <div class="row">
       <div class="span12 gi">
-        <a id="gi" href="#" rel="tooltip" data-placement="right" class="tipsy small" data-original-title="Click to read some general instructions. Click again to hide.">General Instructions</a>
+        <a id="gi" href="#" rel="tooltip" data-placement="right" class="tipsy small" data-original-title="Click to read some general instructions. Click again to hide.">Please read the General Instructions here</a>
         <span class="hide" id="detail-instructions">
-        For the specific theme of this task, you are requested to navigate and browse through the articles, using the tool. You would later be asked to rate the tool on usability, quality of content returned, coverage of content, etc. Clicking on a bar on the timeline displays more information about it. The select boxes below are for filtering on people, topics and from-to date. A timer is kept to track this session. <em>Please avoid pressing Back, instead deselect the filters.</em>
+          For the specific theme of this task, you are requested to navigate and browse through the articles, using the tool. You would later be asked to rate the tool on usability, quality of content returned, coverage of content, etc. Clicking on an event of the time-line below displays a summary, and the articles that appeared. The select boxes below are for filtering on people, topics and from-to date, and studying only these attributes. A timer is kept to track this session. 
+Once, you become sufficiently well-versed with this tool, you will be asked to answer a small questionnaire to rate the aspects of this tool, and some story-related questions to know how much you learnt about the presented story through this tool (<a target="_blank" href="https://docs.google.com/forms/d/1zLtIDKitaQ6sZy_jNYRnADd7is-lq6qi9ETJvzRgk4U/viewform">here</a>). Please don't press browser Back button, instead deselect the filters.
         </span>
       </div>
       
       <!--<a id="zout" class="icon-zoom-in tipsy" title="Zoom Into the Timeline"></a>
       <a id="zin" class="icon-zoom-out tipsy" title="Zoom Out From the Timeline"></a>-->
     </div>
+    <div id="timeline-embed"></div>
     
-    <div class="row shift-right">
-      <div class="controls span2">
+    
+    <div class="row">
+      <div class="controls span8">
         <?php if (!sizeof($articles)): ?>
           <span style="font-weight:bold;">No Articles Found. Please click Back or remove some topics or actors from the filter.</span><br>
         <?php endif; ?>
@@ -246,7 +248,7 @@
         <button rel="tooltip" data-placement="right" title="Show all articles relevant to the filtered actors and topics" id="show-all-articles" class="ui-widget ui-state-default ui-corner-all tipsy">show all articles</button>
         <button rel="tooltip" data-placement="right" title="Study the interaction among the filtered set of actors" id="study-interaction" class="ui-widget ui-state-default ui-corner-all tipsy">study interaction</button>
       </div>
-      <div class="span12" id="headline-key"></div>
+      <div class="span2" id="headline-key"></div>
     </div>
     
     <!--  Placeholder for Google Maps on the annual interaction -->

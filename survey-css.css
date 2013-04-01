@@ -201,17 +201,15 @@ text {
   font: 10px sans-serif;
 }
 .controls {
-  padding: 0 0 0 20px;
+  padding: 0 0 20px 20px;
 }
 .small {
-  font-size: 13px;
+  font-size: 18px;
+  font-weight: bold;
 }
 .grey {
   color: #555;
   font-size: 12px;
-}
-.shift-right {
-  padding-left: 20px;
 }
 .legend-links, .pointer {
   cursor: pointer;

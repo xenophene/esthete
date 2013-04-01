@@ -502,25 +502,42 @@
   function create_headline_anchors($articles, $h, $ids) {
     $a = '<ul>';
     $class_name = sizeof($h) >= 3 ? 'prominent' : 'dull';
+    $actors = array();
+    $topics = array();
     for ($i = 0; $i < sizeof($h); $i++) {
       $id = $articles[$ids[$i]]->get_id();
       $a .= '<li><a class=' . $class_name . ' name=' . $id . ' onclick=urlclick(this,this.parentElement,this.parentElement.parentElement);
       href=#>' . $h[$i] . ' </a></li>';
+      $actors = array_merge($actors, $articles[$ids[$i]]->get_uactors());
+      $topics = array_merge($topics, $articles[$ids[$i]]->get_utopics());
     }
-    return $a . '<li>Click on article links above to read full</li></ul>';
+    $actors = implode(', ', array_map('ucwords', array_unique($actors)));
+    $topics = implode(', ', array_map('ucwords', array_unique($topics)));
+    return $a .
+    '<li>Click on article links above to read full</li>' .
+    '<br/><br/>' .
+    '<li><b>Actors: ' . $actors . '</b></li>' .
+    '<li><b>Topics: ' . $topics . '</b></li>' .
+    '</ul>';
+    
   }
   function get_summary($articles, $ids, $sum_basic, $actors) {
     $full_text = '';
+    $summary = '';
     foreach ($ids as $id) {
+      $summary .= '. ' . $articles[$id]->get_summary() . '. ';
       $full_text .= $articles[$id]->get_clean_body();
     }
-    $sum_basic->set_subject($full_text, $actors);
-    $summary = $sum_basic->run(4);
+    foreach ($actors as $actor) {
+      $summary = str_ireplace($actor, '<b>' . ucwords($actor) . '</b>',
+                         $summary);
+    }
+    //$sum_basic->set_subject($full_text, $actors);
+    //$summary = $sum_basic->run(8);
     return $summary;
   }
   function get_cluster_partitions($clusters, $articles, $actors, $indexid) {
     if (empty($clusters)) return array();
-    
     $min_day_gap = 10;
     $sum_basic = new SumBasic();
     $partitions = array();
@@ -551,10 +568,9 @@
       $all_topics = get_all_topics($articles, $article_ids);
       $summary = get_summary($articles, $article_ids, $sum_basic, $actors);
       if ($summary == '...') {
-        $i++;
         continue;
       }
-      $summary = 'Event summary: ' . $summary;
+      $summary = '<strong>Event summary:</strong> ' . $summary;
       $h = get_headlines($articles, $article_ids);
       $h_text = get_headline_text($articles, $article_ids);
       $anchors = create_headline_anchors($articles, $h_text, $article_ids);

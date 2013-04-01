@@ -1,5 +1,5 @@
 <?php
-  $total_tasks = 10;
+  $total_tasks = 11;
   // constants functions based on task
   
   function show_task_question($task_id) {
@@ -24,6 +24,8 @@
       8 => "Rape Incidents and News Stories in 2012"//"Find and mark articles that capture the following facts regarding stories around rape cases in India"
       ,
       9 => "News Stories around Petrol prices in 2012"//"Find articles which portray how different sections of society have reacted to the frequent petrol price hikes in the past"
+      ,
+      10  =>  "Syrian war crisis"
       ,
     );
     echo $task_questions[$task_id];
@@ -126,7 +128,7 @@ the year 2012."
     7 => '2012-01-01',
     8 => '2012-01-01',
     9 => '2012-01-01',
-    10 => '2012-01-01'
+    10 => '2010-01-01'
   );
   $task_end_date = array(
     0 => '2000-12-31',
@@ -139,7 +141,7 @@ the year 2012."
     7 => '2012-12-31',
     8 => '2012-12-31',
     9 => '2012-12-31',
-    10 => '2012-12-31'
+    10 => '2013-12-31'
   );
   
   function get_actors($task_id) {
@@ -170,7 +172,8 @@ the year 2012."
             "Saina Nehwal"
           ),
       8 => array(),
-      9 => array()
+      9 => array(),
+      10  => array(),
     );
     return $task_actors[$task_id];
   }
@@ -211,7 +214,8 @@ array(72),array(412,414),array(316),array(394,420,387,390,388,389),array(143,149
           ),
       9 => array(
             "Petrol"
-          )
+          ),
+      10 => array()
     );
     return $task_topics[$task_id];
   }
@@ -244,7 +248,8 @@ array(72),array(412,414),array(316),array(394,420,387,390,388,389),array(143,149
       6 => 'hindu',
       7 => 'badminton',
       8 => 'rape',
-      9 => 'petrol'
+      9 => 'petrol',
+      10  => 'syria'
     );
     return $task_table[$task_id];
   }
