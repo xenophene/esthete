@@ -657,71 +657,51 @@ $(function () { //ready function
 	}
 	function plotAsLegend(reply) {
 		saveReply = reply;
-		console.log(reply);
 		if (reply.length) var year = reply[0][2].split('-')[0];
-		var monthBins = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-			, sortMonthBins = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-			, monthTopics = []
-			,	monthAids = [];
+		var annualMonthBins = {}
+			, annualMonthTopics = {};
+			
 		for (k in reply) {
 			var amonth = parseInt(reply[k][2].split('-')[1], 10) - 1;
-			monthBins[amonth]++;
-			if (monthAids[amonth]) monthAids[amonth].push(k);
-			else monthAids[amonth] = [k];
-			sortMonthBins[amonth]++;
+			var ayear = parseInt(reply[k][2].split('-')[0], 10);
+			if (!annualMonthBins[ayear]) {
+				annualMonthBins[ayear] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+			}
+			annualMonthBins[ayear][amonth]++;
+			
+			if (!annualMonthTopics[ayear]) annualMonthTopics[ayear] = [];
+			if (!annualMonthTopics[ayear][amonth])	annualMonthTopics[ayear][amonth] = [];
+			
 			var topics = reply[k][0].split(reply[k][3]);
-			if (!monthTopics[amonth])	monthTopics[amonth] = [];
+			
 			for (var i = 0; i < topics.length; i++) {
 				var topic = topics[i];
-				if (!monthTopics[amonth][topic]) monthTopics[amonth][topic] = 1;
-				else monthTopics[amonth][topic]++;
+				if (!annualMonthTopics[ayear][amonth][topic]) {
+					annualMonthTopics[ayear][amonth][topic] = 1;
+				} else {
+					annualMonthTopics[ayear][amonth][topic]++;
+				}
 			}
 		}
-		sortMonthBins = sortMonthBins.sort(function(a,b){return b - a;});
+		
 		var dataTable = new google.visualization.DataTable();
-		dataTable.addColumn('string', 'Month');
+		dataTable.addColumn('date', 'Year');
 		dataTable.addColumn('number', 'Article Count');
 		dataTable.addColumn({type: 'string', role: 'tooltip'});
-		dataTable.addColumn({type: 'string', role: 'annotation'});
-		var key = 'A';
-		var keyMonth = {};
-		var is_data = [];
-		for (m in monthBins) {
-			var tooltip = monthTopics[m] ? assoc_array_sort(monthTopics[m]).join(', ') : '';
-			var annoText = '';
-			if (monthBins[m] >= sortMonthBins[5] && monthBins[m]) {
-				annoText = key;
-				keyMonth[key] = m;
-				key = String.fromCharCode(key.charCodeAt() + 1);
+		
+		for (var y in annualMonthTopics) {
+			var monthTopics = annualMonthTopics[y];
+			var monthBins = annualMonthBins[y];
+			for (m in monthBins) {
+				var tooltip = monthTopics[m] ? assoc_array_sort(monthTopics[m]).join(', ') : '';
+				dataTable.addRow([new Date(y, m, 1), monthBins[m], tooltip]);
 			}
-			if (annoText == 'remove') annoText = '';
-			is_data.push([monthShortNames[m], monthBins[m], tooltip, annoText]);
 		}
-		var code = '';
-		for (k in keyMonth) {
-			var headlines = [];
-			monthAids[keyMonth[k]].slice(0, 2).map(function(v) {
-				headlines.push('<u name="' + v + '" class="legend-links">' +
-											 $.trim(article_identifier[v]) + '</u>');
-			});
-			var others;
-			if (monthAids[keyMonth[k]].length <= 2) {
-				others = '';
-			} else if (monthAids[keyMonth[k]].length == 3) {
-				others = '<span class="grey"> and 1 other</span>';
-			} else {
-				others = '<span class="grey"> and ' + (monthAids[keyMonth[k]].length - 2) + ' others</span>';
-			}
-			code += k + '. ' + headlines.join(', ') + others + '<br>';
-		}
-		//$('#headline-key').html(code);
-		//$('.legend-links').click(renderArticle);
-		dataTable.addRows(is_data.slice(0, 12));	// will not work tennis
 		var options = {
 			'title': 'Interaction Influence over time',
 			'height': 90,
 			'hAxis': {
-				'showTextEvery': 3
+				'showTextEvery': 2
 			}
 		};
 		// Instantiate and draw our chart, passing in some options.

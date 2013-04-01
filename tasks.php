@@ -1,5 +1,5 @@
 <?php
-  $total_tasks = 11;
+  $total_tasks = 12;
   // constants functions based on task
   
   function show_task_question($task_id) {
@@ -25,7 +25,8 @@
       ,
       9 => "News Stories around Petrol prices in 2012"//"Find articles which portray how different sections of society have reacted to the frequent petrol price hikes in the past"
       ,
-      10  =>  "Syrian war crisis"
+      10  =>  "Syrian war crisis",
+      11  =>  "North Korea related stories"
       ,
     );
     echo $task_questions[$task_id];
@@ -128,7 +129,8 @@ the year 2012."
     7 => '2012-01-01',
     8 => '2012-01-01',
     9 => '2012-01-01',
-    10 => '2010-01-01'
+    10 => '2010-01-01',
+    11 => '2012-01-01',
   );
   $task_end_date = array(
     0 => '2000-12-31',
@@ -141,7 +143,8 @@ the year 2012."
     7 => '2012-12-31',
     8 => '2012-12-31',
     9 => '2012-12-31',
-    10 => '2013-12-31'
+    10 => '2013-12-31',
+    11 => '2013-12-31',
   );
   
   function get_actors($task_id) {
@@ -174,6 +177,7 @@ the year 2012."
       8 => array(),
       9 => array(),
       10  => array(),
+      11  => array(),
     );
     return $task_actors[$task_id];
   }
@@ -215,7 +219,10 @@ array(72),array(412,414),array(316),array(394,420,387,390,388,389),array(143,149
       9 => array(
             "Petrol"
           ),
-      10 => array()
+      10 => array(),
+      11 => array(
+            "North Korea"
+          ),
     );
     return $task_topics[$task_id];
   }
@@ -249,7 +256,8 @@ array(72),array(412,414),array(316),array(394,420,387,390,388,389),array(143,149
       7 => 'badminton',
       8 => 'rape',
       9 => 'petrol',
-      10  => 'syria'
+      10  => 'syria',
+      11  => 'north-korea'
     );
     return $task_table[$task_id];
   }
