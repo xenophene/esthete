@@ -94,6 +94,9 @@ class Article {
   function get_id() {
     return $this->id;
   }
+  function get_author() {
+    return $this->author;
+  }
   function get_identifier() {
     return array($this->id, $this->get_headline());
   }
@@ -149,6 +152,7 @@ class Article {
     $this->utopics = $retain_topics;
   }
   var $id;
+  var $author;
   var $title;
   var $uactors;
   var $utopics;
@@ -157,6 +161,7 @@ class Article {
   var $body;
   function __construct($row) {
     $this->id = $row['aid'];
+    $this->author = $row['author'];
     $this->set_title($row);
     $this->set_summary($row['asumm']);
     $this->set_uactors($row['uactors']);

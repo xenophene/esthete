@@ -11,6 +11,8 @@
       IIT Delhi - News Browsing Interface
     </h2>
     <p>Thank you, for taking the survey! Please try the tool by solving any of the following tasks.</p>
+    <h3>The survey for the interface is for <a href="survey_v2.php?taskid=8">this task.</a></h3>
+    <p>Some other predefined themes are available below.</p>
     <ol>
     <?php
       include 'tasks.php';
@@ -32,7 +34,7 @@
         <p>We are currently pursuing our Masters project, and our objective is to make online news browsing (specially old archival news) very informative and contextual.
         </p>
         <p>
-        Given, a set of articles, we mine the entities appearing in it, and attach them to the topics/events being discussed about in it. All these actor-topic interactions are summarized in time, and are displayed horizontally on a moving timeline. So all the articles are represented as points in time on the timeline, which you can probe at different places. For a particular set of actor-topic filters that you are focussing on, you see the relevant topics &amp; actors, and can broaden or narrow your search in that way. Finally, your task is to answer a particular subjective question from the articles. In most cases, such information, is not readily available from other sources like Wikipedia, or it may be biased. 
+        Given, a set of articles, we mine the entities appearing in it, and attach them to the topics/events being discussed about in it. All these actor-topic interactions are summarized in time, and are displayed horizontally on a moving timeline. So all the articles are represented as points in time on the timeline, which you can probe at different places. For a particular set of actor-topic filters that you are focussing on, you see the relevant topics &amp; actors, and can broaden or narrow your search in that way.
         </p>
         <p>
         [1] R. Choudhary, S. Mehta, A. Bagchi, and R. Balakrishnan. Towards characterization of actor

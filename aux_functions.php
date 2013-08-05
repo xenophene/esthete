@@ -191,10 +191,15 @@
     $q_params = array();
     foreach ($fa as $a) {
       array_push($q_params, "`uactors` LIKE '%$a%'");
+      
     }
+    array_push($q_params, "`uactors` != ''");
+    
     foreach ($ft as $t) {
       array_push($q_params, "`utopics` LIKE '%$t%'");
     }
+    array_push($q_params, "`utopics` != ''");
+    
     array_push($q_params, "`adate` >= '$fd'");
     array_push($q_params, "`adate` <= '$td'");
     $q .= implode(" AND ", $q_params) . " ORDER BY `adate` LIMIT " . $limit;
@@ -516,8 +521,8 @@
     return $a .
     '<li>Click on article links above to read full</li>' .
     '<br/><br/>' .
-    '<li><b>Actors: ' . $actors . '</b></li>' .
-    '<li><b>Topics: ' . $topics . '</b></li>' .
+    '<li><b>Other Actors:</b> ' . $actors . '</li>' .
+    '<li><b>Other Topics:</b> ' . $topics . '</li>' .
     '</ul>';
     
   }
@@ -526,7 +531,7 @@
     $summary = '';
     foreach ($ids as $id) {
       $summary .= '. ' . $articles[$id]->get_summary() . '. ';
-      $full_text .= $articles[$id]->get_clean_body();
+      //$full_text .= $articles[$id]->get_clean_body();
     }
     foreach ($actors as $actor) {
       $summary = str_ireplace($actor, '<b>' . ucwords($actor) . '</b>',
@@ -538,7 +543,8 @@
   }
   function get_cluster_partitions($clusters, $articles, $actors, $indexid) {
     if (empty($clusters)) return array();
-    $min_day_gap = 10;
+    
+    $min_day_gap = 1;
     $sum_basic = new SumBasic();
     $partitions = array();
     $article_dbids = array();
@@ -557,6 +563,7 @@
       foreach ($article_dbids as $article_dbid) {
         array_push($article_ids, $indexid[$article_dbid]);
       }
+      sort($article_ids);
       $startaid = $article_ids[0];
       $endaid = end($article_ids);
       $st = $articles[$startaid]->get_start_date_ts();
@@ -598,7 +605,7 @@
    */
   function create_stitched_timelinejs_events($articles, $period_partitions, $actors) {
     $elems = array();
-    $min_day_gap = 10;
+    $min_day_gap = 1;
     $sum_basic = new SumBasic();
     if (empty($period_partitions)) return;
     foreach ($period_partitions as $partitions) {
@@ -689,7 +696,8 @@
     $timeline = array(
                 'headline'  =>  'News Browsing Tool',
                 'type'      =>  'default',
-                'text'      =>  'News Events throughout the Year',
+                'text'      =>  'For this task, you are requested to use the tool and discover the underlying events, people, etc. You will later be asked to rate the tool on usability, quality of content returned, coverage of content, etc. Clicking on an event (rectangle boxes that you can see below) of the time-line displays a summary, and the articles that appeared. <strong>Refine your search by selecting specific actors, topics and time periods and click on query</strong>.
+Once, you become sufficiently well-versed with this tool, kindly answer a small questionnaire to rate the aspects of this tool <a target="_blank" href="https://docs.google.com/forms/d/1zLtIDKitaQ6sZy_jNYRnADd7is-lq6qi9ETJvzRgk4U/viewform">here</a>. Please dont press browser Back button, instead deselect the filters. You can use left-right arrow keys to move across events.',
                 'startDate' =>  $start_date,
                 'date'      =>  $timelinejs_events
               );

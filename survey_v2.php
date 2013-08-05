@@ -8,11 +8,13 @@
     <link rel="stylesheet" href="jquery-ui-1.8.23.custom.css"/>
     <link rel="stylesheet" href="jquery.multiselect.filter.css"/>
     <link rel="stylesheet" href="jquery.multiselect.css"/>
+    <link rel="stylesheet" href="css/jquery.tagit.css"/>
+    <link rel="stylesheet" href="css/tagit.ui-zendesk.css"/>
     <link rel="stylesheet" href="survey-css.css"/>
     <link rel="icon" href="nb.ico"/>
     
     <!--Thank you, David François Huynh!-->
-    <script src="src/webapp/api/timeline-api.js?bundle=true" type="text/javascript"></script>
+    <!--<script src="src/webapp/api/timeline-api.js?bundle=true" type="text/javascript"></script>-->
   </head>
   <body>
 
@@ -75,7 +77,6 @@
   $ra_map = reverse_actor_map($articles);
   $timeline_actors = get_actors_by_article_count($ra_map);
   // take an array slice here.
-  
   $rt_map = reverse_topic_map($articles);
   //$topic_containers = get_containers($rt_map);
   $topic_containers = array();
@@ -89,9 +90,9 @@
   foreach ($articles as $article) {
     $article->keep_topics($timeline_topics);
   }
-  $topics = enrich_tags($topics, $articles, 1);
-  $actors = enrich_tags($actors, $articles, 0);
-
+  //$topics = enrich_tags($topics, $articles, 1);
+  //$actors = enrich_tags($actors, $articles, 0);
+  
   // go about showing these events. for each actors in ra_map, show the articles
   // that talk about the actor, by the topic mentioned. have a further description
   // with headline and link
@@ -108,17 +109,26 @@
   //$partition_events = create_stitched_partition_events($articles, $period_partitions);
   
   $clusters = get_clusters($task_id);
-  $cluster_partitions = get_cluster_partitions($clusters, $articles, $actors, $indexid);
+  $cluster_partitions = get_cluster_partitions($clusters, $articles,
+                                               array_merge(
+                                                          $fa,
+                                                          $timeline_actors
+                                                          ), $indexid);
   if ( ! empty($cluster_partitions)) {
     $timelinejs = set_up_timelinejs($cluster_partitions);
   } else {
     $timelinejs_events = create_stitched_timelinejs_events($articles,
                                                            $period_partitions,
                                                            array_map('strtolower',
-                                                                       $actors)
+                                                                       array_merge(
+                                                                        $fa,
+                                                                        $timeline_actors
+                                                                        ))
                                                           );
     $timelinejs = set_up_timelinejs($timelinejs_events);
   }
+  
+  //echo json_encode($timelinejs);
   //$jsobj['events'] = get_timeline_events($timeline_actors, $articles, $ra_map, $t_color_map, $tid);
   //$jsobj['events'] = $partition_events;
   
@@ -137,17 +147,27 @@
       </div>
       -->
       <div class="span7">
+        <ul id="omni-search" name="omni-search">
+          <?php
+            foreach ($fa as $a)  {
+              echo '<li>' . $a . '</li>';
+            }
+            foreach ($ft as $t)  {
+              echo '<li>' . $t . '</li>';
+            }
+          ?>
+        </ul>
         <form method="POST" id="filter-form">
           <table>
             <tbody>
               <tr>
-                <td class="head">Filter on the actors below</td>
+                <td class="head">Select from one or more actors below:</td>
                 <td class="head">From the date</td>
               </tr>
               <tr>
                 <td>
                   <select data-placeholder="Filter on Actors..." multiple id="actor-filter" name="fa[]">
-                    <?php get_options($fa, $actors); ?>
+                    <?php get_options($fa, $timeline_actors); ?>
                   </select>
                 </td>
                 <td>
@@ -158,14 +178,13 @@
                 </td>
               </tr>
               <tr>
-                <td class="head">Filter on the topics below</td>
-                
+                <td class="head">Select from one or more topics below:</td>
                 <td class="head">To the date</td>
               </tr>
               <tr>
                 <td>
                   <select data-placeholder="Filter on Topics..." multiple id="topic-filter" name="ft[]">
-                    <?php get_options($ft, $topics); ?>
+                    <?php get_options($ft, $timeline_topics); ?>
                   </select>
                 </td>
                 <td>
@@ -178,8 +197,9 @@
                   <input type="hidden" name="past-ft" id="past-ft"
                          value="<?php echo implode(';', $pft); ?>"/>
                   <input type="hidden" name="going-back" id="going-back" value="0"/>
-                  <button rel="tooltip" title="Query for articles on the specified filter"
-                          type="submit" class="ui-widget ui-state-default ui-corner-all tipsy">query</button>
+                  <button rel="tooltip" title="Click here to query for articles on the specified filter"
+                          type="submit" id="query"
+                          class="ui-widget ui-state-default ui-corner-all tipsy">query</button>
                 </td>
               </tr>
             </tbody>
@@ -224,8 +244,19 @@
     <!--<div id="tl"></div>-->
     <div class="row">
       <div class="span12 gi">
-        <a id="gi" href="#" rel="tooltip" data-placement="right" class="tipsy small" data-original-title="Click to read some general instructions. Click again to hide.">Please read the General Instructions here</a>
+        <!--<a target="_blank" class="tipsy small" href="https://docs.google.com/forms/d/1zLtIDKitaQ6sZy_jNYRnADd7is-lq6qi9ETJvzRgk4U/viewform">After using this tool, please answer this questionnaire here</a><br/>-->
+        <?php if (sizeof($articles)): ?>
+        <strong>The following news features
+        <?php if (empty($fa)): ?> all actors
+        <?php else: echo 'the actors: ' . implode(' and ', $fa); endif; ?>
+        on
+        <?php if (empty($ft)): ?> all topics
+        <?php else: echo 'the topics: ' . implode(' and ', $ft); endif; ?>
+        </strong>
+        <?php endif; ?>
+        <!--<a id="gi" href="#" rel="tooltip" data-placement="right" class="tipsy small" data-original-title="Click to read some general instructions. Click again to hide.">Please read the General Instructions here</a>-->
         <span class="hide" id="detail-instructions">
+          <a target="_blank" href="https://docs.google.com/forms/d/1zLtIDKitaQ6sZy_jNYRnADd7is-lq6qi9ETJvzRgk4U/viewform">Click here for giving the survey</a>
           For the specific theme of this task, you are requested to navigate and browse through the articles, using the tool. You would later be asked to rate the tool on usability, quality of content returned, coverage of content, etc. Clicking on an event of the time-line below displays a summary, and the articles that appeared. The select boxes below are for filtering on people, topics and from-to date, and studying only these attributes. A timer is kept to track this session. 
 Once, you become sufficiently well-versed with this tool, you will be asked to answer a small questionnaire to rate the aspects of this tool, and some story-related questions to know how much you learnt about the presented story through this tool (<a target="_blank" href="https://docs.google.com/forms/d/1zLtIDKitaQ6sZy_jNYRnADd7is-lq6qi9ETJvzRgk4U/viewform">here</a>). Please don't press browser Back button, instead deselect the filters.
         </span>
@@ -243,10 +274,10 @@ Once, you become sufficiently well-versed with this tool, you will be asked to a
           <span style="font-weight:bold;">No Articles Found. Please click Back or remove some topics or actors from the filter.</span><br>
         <?php endif; ?>
         <button rel="tooltip" data-placement="right" title="Submit this answer." id="submit-answer" class="ui-widget ui-state-default ui-corner-all tipsy">finish task</button>
-        <button rel="tooltip" data-placement="right" title="Skip this task and go back to the survey home page." id="skip-task" class="ui-widget ui-state-default ui-corner-all tipsy">skip task</button>
+        <button rel="tooltip" data-placement="right" title="Skip this task and go back to the survey home page." id="skip-task" class="ui-widget ui-state-default ui-corner-all tipsy">skip and study other stories</button>
         <!--<button rel="tooltip" title="Aggregation tries to aggregate all the articles related by one or more common actors and topics into a single black block." id="turn-on" class="ui-widget ui-state-default ui-corner-all tipsy">toggle aggregation feature</button>-->
         <button rel="tooltip" data-placement="right" title="Show all articles relevant to the filtered actors and topics" id="show-all-articles" class="ui-widget ui-state-default ui-corner-all tipsy">show all articles</button>
-        <button rel="tooltip" data-placement="right" title="Study the interaction among the filtered set of actors" id="study-interaction" class="ui-widget ui-state-default ui-corner-all tipsy">study interaction</button>
+        <!--<button rel="tooltip" data-placement="right" title="Study the interaction among the filtered set of actors" id="study-interaction" class="ui-widget ui-state-default ui-corner-all tipsy">study interaction</button>-->
       </div>
       <div class="span2" id="headline-key"></div>
     </div>
@@ -271,7 +302,7 @@ Once, you become sufficiently well-versed with this tool, you will be asked to a
     <script src="js/bootstrap-tooltip.js" type="text/javascript"></script>
     <script src="js/bootstrap-popover.js" type="text/javascript"></script>
     <script src="js/bootstrap-tab.js" type="text/javascript"></script>
-    <!--Fancy UI components from jquery-ui-->
+    <!--Fancy UI components from jQuery-UI-->
     <script src="jquery-ui-1.8.23.custom.min.js" type="text/javascript"></script>
     <script src="jquery.multiselect.filter.min.js" type="text/javascript"></script>
     <script src="jquery.multiselect.min.js" type="text/javascript"></script>
@@ -279,8 +310,10 @@ Once, you become sufficiently well-versed with this tool, you will be asked to a
     <script type="text/javascript" src="TimelineJS-master/compiled/js/storyjs-embed.js"></script>
     <!--Google Charting API-->
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <!--jQuery Tag It API-->
+    <script type="text/javascript" src="js/tag-it-min.js"></script>
     <!--D3 Library-->
-    <script src="http://d3js.org/d3.v2.min.js?2.8.1"></script>
+    <!--<script src="http://d3js.org/d3.v2.min.js?2.8.1"></script>-->
     <!--My Script-->
     <script src="survey-script_v2.js" type="text/javascript"></script>
     <?php
@@ -298,6 +331,8 @@ Once, you become sufficiently well-versed with this tool, you will be asked to a
       var session = ' . json_encode($session) . ';
       var article_identifier = ' . json_encode($article_identifier) . ';
       var levels = ' . json_encode($topic_containers) . ';
+      var timeline_filters = ' . json_encode(array_merge($timeline_topics, $timeline_actors)) . ';
+      var timeline_selected_filters = ' . json_encode(array_merge($ft, $fa)) . ';
       var timelinejsobj = ' . json_encode($timelinejs) . ';
           </script>';
     ?>

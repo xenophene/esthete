@@ -6,7 +6,7 @@
 include 'config_survey.php';
 include 'aux_functions.php';
 
-$table = 'badminton';
+$table = 'north-korea';
 $q = "SELECT * FROM `$table`";
 $r = mysql_query($q);
 for ($i = 0; $i < mysql_num_rows($r); $i++) {

@@ -13,7 +13,7 @@ var tl,
 		globalGrandparentObj,
 		prevATag,
 		nextATag;
-	
+
 function getLoadingImg() {
 	return '<ul class="loading"><li><img src="loading3.gif" alt="Loading" title="Loading"/></li></ul>';
 }
@@ -103,15 +103,17 @@ function urlclick(obj, parent_obj, grandparent_obj) {
 			var date = data[3].split('-')[2] + ' ' +
 								 monthNames[parseInt(data[3].split('-')[1], 10) - 1] +
 								 ' ' + data[3].split('-')[0];
-			
+			var author = data[4] ? data[4] : 'Not available';
+			elm.append('<strong>Author: ' + author + '</strong><br/>');
 			if (data[2]) {
-				elm.append('<strong>Date: ' + date + '</strong><br><i>' + data[2] + '</i>');
+				elm.append('<strong>Date: ' + date + '</strong><br/><i>' + data[2] + '</i>');
 			} else {
 				elm.append('<strong>Date: ' + date + '</strong>');
 			}
 			if (data[1].indexOf('<p>') === -1) {
 				data[1] = sprinklePTags(data[1]);
 			}
+			
 			elm.append('<p>' + data[1] + '</p>');
 			
 			/* AND NOW BEGINS THE BIGGEST HACK IN THE HISTORY OF MANKIND */
@@ -158,7 +160,7 @@ $(function () { //ready function
   var currScroll = 0;
   var currEvt;
 	/* TimelineJS initialization code */
-	if (timelinejsobj.timeline.date) {
+	if (timelinejsobj.timeline.date && timelinejsobj.timeline.date !== []) {
 		createStoryJS({
 			type:	'timeline',
 			width:	'95%',
@@ -263,7 +265,7 @@ $(function () { //ready function
   // show the date selector
   var dates = $( "#fd, #td" ).datepicker({
     minDate: new Date(fyear, 0, 1),
-    maxDate: new Date(fyear + 1, 0, 1),
+    maxDate: new Date(tyear + 1, 0, 1),
     dateFormat: 'yy-mm-dd',
     defaultDate: new Date(fyear, 0, 1),
     changeMonth: true,
@@ -304,6 +306,7 @@ $(function () { //ready function
     label: 'Filter on...',
     placeholder: 'Topics'
   });
+	
   setInterval(function () {
     var m = parseInt($('#minutes').html(), 10);
     var s = parseInt($('#seconds').html(), 10);
@@ -342,7 +345,7 @@ $(function () { //ready function
   function toTitleCase(str) {
     return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
   }
-  
+  /*
   function performFiltering(timeline, bandIndices, regex) {
     var regexes = [];
     var hasHighlights = regex != "";
@@ -377,6 +380,7 @@ $(function () { //ready function
   var oldOnClickDurationEvent = Timeline.OriginalEventPainter.prototype._onClickDurationEvent;
   var oldFillInfoBubble = Timeline.DefaultEventSource.Event.prototype.fillInfoBubble;
   var oldShowBubble = Timeline.OriginalEventPainter.prototype._showBubble;
+  */
   function parseDate(d) {
     d = d.split(' ');
     var date = new Date();
@@ -385,7 +389,7 @@ $(function () { //ready function
     date.setMonth(get_month_code(d[1]));
     return date;
   }
-  
+  /*
   Timeline.OriginalEventPainter.prototype._showBubble = function (x, y, evt) {
 		if (!evt._description) return;
 		currEvt = evt;
@@ -412,6 +416,7 @@ $(function () { //ready function
 		showActorBubbles(evt);
 		showTopicBubbles(evt)
   };
+  */
   function showActorBubbles(evt) {
 		var desc = evt._description.split('|');
 		var aids = desc[2].toString().split('^');
@@ -585,9 +590,9 @@ $(function () { //ready function
   $('#study-interaction').click(function() {
 		if (!google.visualization) return;
 		var tabs = '<div class="tabbable"><ul id="interaction-tabs" class="nav nav-tabs">';
-		tabs += '<li class="active"><a href="#t1">Interaction Strength</a></li>'
+		tabs += //'<li class="active"><a href="#t1">Interaction Strength</a></li>'
 						//<li><a href="#t2">Topic Hierarchy</a></li>
-						+'<li><a href="#t3">Popular Actors</a></li>\
+						'<li><a href="#t3">Popular Actors</a></li>\
 						<li><a href="#t4">Popular Topics</a></li></ul>';
 		
 		
@@ -655,24 +660,38 @@ $(function () { //ready function
 			}
 		} else fp(saveReply);
 	}
+	
 	function plotAsLegend(reply) {
 		saveReply = reply;
 		if (reply.length) var year = reply[0][2].split('-')[0];
 		var annualMonthBins = {}
-			, annualMonthTopics = {};
+			, annualMonthTopics = {}
+			, filtered_topics = [];
 			
+		$('#topic-filter option:selected').each (function () {
+			filtered_topics.push($.trim($(this).text().toLowerCase()));
+		});
 		for (k in reply) {
 			var amonth = parseInt(reply[k][2].split('-')[1], 10) - 1;
 			var ayear = parseInt(reply[k][2].split('-')[0], 10);
+			
 			if (!annualMonthBins[ayear]) {
 				annualMonthBins[ayear] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 			}
 			annualMonthBins[ayear][amonth]++;
 			
-			if (!annualMonthTopics[ayear]) annualMonthTopics[ayear] = [];
-			if (!annualMonthTopics[ayear][amonth])	annualMonthTopics[ayear][amonth] = [];
+			if (!annualMonthTopics[ayear]) {
+				annualMonthTopics[ayear] = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}];
+			}
 			
-			var topics = reply[k][0].split(reply[k][3]);
+			
+			var topics = reply[k][0].split(reply[k][3]).map(function (s) {
+				return $.trim(s.toLowerCase());
+			});
+			
+			topics = $.grep(topics, function (d, i) {
+				return $.inArray(d, filtered_topics) === -1;
+			});
 			
 			for (var i = 0; i < topics.length; i++) {
 				var topic = topics[i];
@@ -683,28 +702,32 @@ $(function () { //ready function
 				}
 			}
 		}
-		
 		var dataTable = new google.visualization.DataTable();
-		dataTable.addColumn('date', 'Year');
+		var dataRow = [];
+		dataTable.addColumn('string', 'Year');
 		dataTable.addColumn('number', 'Article Count');
 		dataTable.addColumn({type: 'string', role: 'tooltip'});
+		var showEvery = Object.keys(annualMonthBins).length * 3;
 		
-		for (var y in annualMonthTopics) {
+		for (var y in annualMonthBins) {
 			var monthTopics = annualMonthTopics[y];
 			var monthBins = annualMonthBins[y];
-			for (m in monthBins) {
+			for (var m = 0; m < 12; m++) {
 				var tooltip = monthTopics[m] ? assoc_array_sort(monthTopics[m]).join(', ') : '';
-				dataTable.addRow([new Date(y, m, 1), monthBins[m], tooltip]);
+				dataRow.push([(parseInt(m) + 1) + '/' + y.toString(), monthBins[m], tooltip]);
 			}
 		}
+		dataTable.addRows(dataRow);
+		
 		var options = {
-			'title': 'Interaction Influence over time',
-			'height': 90,
+			'title': 'Article Count (Interaction Influence) over time',
+			'height': 85,
 			'hAxis': {
-				'showTextEvery': 2
+				'showTextEvery': showEvery
 			}
 		};
 		// Instantiate and draw our chart, passing in some options.
+		
 		var chart = new google.visualization.LineChart(document.getElementById('mpe-chart-chart'));
 		chart.draw(dataTable, options);
 	}
@@ -731,39 +754,6 @@ $(function () { //ready function
 		// construct the first plot
 		// -- monthly-bin wise frequency of articles
 		// get the year
-		if (reply.length) var year = reply[0][2].split('-')[0];
-		var monthBins = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-			, monthTopics = [];
-		
-		for (var k in reply) {
-			var amonth = parseInt(reply[k][2].split('-')[1], 10) - 1;
-			monthBins[amonth]++;
-			var topics = reply[k][0].split(reply[k][3]);
-			if (!monthTopics[amonth])	monthTopics[amonth] = [];
-			for (var i = 0; i < topics.length; i++) {
-				var topic = $.trim(topics[i]);
-				if (!monthTopics[amonth][topic]) monthTopics[amonth][topic] = 1;
-				else monthTopics[amonth][topic]++;
-			}
-		}
-		var dataTable = new google.visualization.DataTable();
-		dataTable.addColumn('string', 'Month');
-		dataTable.addColumn('number', 'Article Count');
-		dataTable.addColumn({type: 'string', role: 'tooltip'});
-		var is_data = [];
-		for (var m in monthBins) {
-			var tooltip = monthTopics[m] ? assoc_array_sort(monthTopics[m]).join(', ') : '';
-			is_data.push([monthNames[m], monthBins[m], tooltip]);
-		}
-		dataTable.addRows(is_data.slice(0,11)); // why did i need this? figure out!
-		var options = {
-			'title': 'Interaction Influence over time'
-		};
-		// Instantiate and draw our chart, passing in some options.
-		
-		var chart = new google.visualization.LineChart(document.getElementById('i-s'));
-		chart.draw(dataTable, options);
-		
 		// get actors from all articles in reply, and create a popularity list
 		if (globalActorMap) successD3BubblePlot(globalActorMap);
 		else {
@@ -807,7 +797,6 @@ $(function () { //ready function
 		}
 		headlines += '</ol>';
 		showModal(headercode, headlines);
-		//$('.evt-call').each(function () {$(this).children('a').tooltip();});
 		$('.evt-call').click(showArticles);
   });
 	function renderArticle() {
@@ -855,12 +844,13 @@ $(function () { //ready function
 					$('.use-marker li').click(sendRelevance);
 					var date = data[3].split('-')[2] + ' ' +
 									monthNames[parseInt(data[3].split('-')[1], 10) - 1] + ' ' +
-									data[3].split('-')[0];
-					
+									data[3].split('-')[0];									
+					var author = data[4] ? data[4] : 'Not available';
+					elm.append('<br/><strong>Author: ' + author + '</strong>');
 					if (data[2]) {
-						elm.append('<br><strong>Date: ' + date + '</strong><i>' + data[2] + '</i>');
+						elm.append('<br/><strong>Date: ' + date + '</strong><i>' + data[2] + '</i>');
 					} else {
-						elm.append('<br><strong>Date: ' + date + '</strong>');
+						elm.append('<br/><strong>Date: ' + date + '</strong>');
 					}
 					elm.append('<p>' + data[1] + '</p>');
 				}
@@ -870,7 +860,6 @@ $(function () { //ready function
 			$(this).children('a').css('font-weight', '');
 			$(this).removeAttr('called');
 			$(this).html('<a title="Click to read this article">' + $(this).children('a').html() + '</a>');
-			//$('.evt-call').each(function () {$(this).children('a').tooltip();});
 		}
   }
   
@@ -974,6 +963,75 @@ $(function () { //ready function
   $('.tipsy').each(function () {$(this).tooltip();});
   clickListeners();
   setUpFeedback();
+	
+	
+	$('#omni-search').tagit({
+		removeConfirmation: true,
+		allowSpaces: true,
+		placeholderText: 'Add/remove new tags...',
+		availableTags: timeline_filters,
+		autocomplete: {
+			source: function(request, response) {
+        var results = $.ui.autocomplete.filter(timeline_filters, request.term);
+        response(results.slice(0, 10));
+			},
+			delay: 100,
+			minLength: 2
+		},
+		afterTagAdded: function (evt, ui) {
+			if (!ui.duringInitialization) {
+				// find them in the select box and check them
+				var e = $("#topic-filter option[value='"+$.trim(ui.tagLabel)+"']");
+				if (e) {
+					e.attr("selected", "selected");
+				}
+				e = $("#actor-filter option[value='"+$.trim(ui.tagLabel)+"']");
+				if (e) {
+					e.attr("selected", "selected");
+				}
+				$('#topic-filter').multiselect('refresh');
+				$('#actor-filter').multiselect('refresh');
+				$('#query').tooltip('show');
+			}
+		},
+		afterTagRemoved: function (evt, ui) {
+			if (!ui.duringInitialization) {
+				var e = $("#topic-filter option[value='"+$.trim(ui.tagLabel)+"']");
+				if (e) {
+					e.removeAttr("selected");
+				}
+				e = $("#actor-filter option[value='"+$.trim(ui.tagLabel)+"']");
+				if (e) {
+					e.removeAttr("selected");
+				}
+				$('#topic-filter').multiselect('refresh');
+				$('#actor-filter').multiselect('refresh');
+				$('#query').tooltip('show');
+			}
+		}
+	});
+	$('#actor-filter').multiselect({
+		click: function (evt, ui) {
+			var value = ui.value.toLowerCase();
+			if (ui.checked) {
+				$('#omni-search').tagit('createTag', value);
+			} else {
+				$('#omni-search').tagit('removeTagByLabel', value);
+			}
+			$('#query').tooltip('show');
+		}
+	});
+	$('#topic-filter').multiselect({
+		click: function (evt, ui) {
+			var value = ui.value.toLowerCase();
+			if (ui.checked) {
+				$('#omni-search').tagit('createTag', value);
+			} else {
+				$('#omni-search').tagit('removeTagByLabel', value);
+			}
+			$('#query').tooltip('show');
+		}
+	});
   
 });
 
@@ -992,7 +1050,7 @@ function setUpFeedback() {
 			 <label for="msg">Feedback</label><br>\
 			 <textarea id="msg" class="no-resize ui-widget ui-corner-all" name="msg" rows="12" cols="30" placeholder="your feedback"></textarea>\
 			 <button type="submit" class="ui-widget ui-state-default ui-corner-all">submit</button>\
-			 </form></div></div>';
+			 </form>This feedback is optional. However, the questionnaire above is required.</div></div>';
   
 	$('body').append(code);
   
@@ -1046,8 +1104,6 @@ function setUpFeedback() {
 			comment: message
 			},
 			success: function(data) {
-				//$('#form-wrap').html("<div id='response-message'></div>");
-				//$('#response-message').html("<p>" + response_message +"</p>")
 				$('#email').val('');
 				$('#msg').val('');
 				$('#form-wrap')

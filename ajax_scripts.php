@@ -29,12 +29,14 @@
       if ($task_id == 0 || $task_id == 2) $asumm = '';
       else $asumm = $r['asumm'];
       $adate = $r['adate'];
+      $author = $r['author'];
       preg_match($p, $afull, $matches);
       echo json_encode(array(
         $aid,
         $matches[0],
         $asumm,
-        $adate
+        $adate,
+        $author
       ));
     }
   }
