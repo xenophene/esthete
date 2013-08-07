@@ -64,6 +64,11 @@ function showModal(headercode, bodycode) {
 /**
 	* TimelineJS modified JS code
 	*/
+
+function goWiki(obj) {
+	var link = '//en.wikipedia.org/wiki/' + obj.innerHTML.replace(' ', '_');
+	window.open(link);
+}
 function urlclick(obj, parent_obj, grandparent_obj) {
 	
 	globalParentObj = parent_obj;

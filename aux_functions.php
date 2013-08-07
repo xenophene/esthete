@@ -516,12 +516,21 @@
       $actors = array_merge($actors, $articles[$ids[$i]]->get_uactors());
       $topics = array_merge($topics, $articles[$ids[$i]]->get_utopics());
     }
-    $actors = implode(', ', array_map('ucwords', array_unique($actors)));
+    $actors = array_map('ucwords', array_unique($actors));
     $topics = implode(', ', array_map('ucwords', array_unique($topics)));
+    
+    
+    $links = '';
+    foreach ($actors as $actor) {
+      $links .= '<li><a onclick=goWiki(this);
+      href=#>' . $actor . '</a></li>';
+      //array_push($t_actors, $t_actor);
+    }
+    //$actors = implode('', $t_actors);
     return $a .
     '<li>Click on article links above to read full</li>' .
     '<br/><br/>' .
-    '<li><b>Other Actors:</b> ' . $actors . '</li>' .
+    '<li><b>Other Actors:</b><li>' . $links .
     '<li><b>Other Topics:</b> ' . $topics . '</li>' .
     '</ul>';
     
