@@ -35,11 +35,21 @@
   $tablename = get_table_name($task_id);
   
   // get arguments
+  
   $ts = get_time_spent($_POST);
   $pfa = get_past_filters($_POST, 'past-fa', $actors);
   $pft = get_past_filters($_POST, 'past-ft', $topics);
-  $fa = get_filtered_actors($_POST, $actors, $pfa);
-  $ft = get_filtered_topics($_POST, $topics, $pft);
+  
+  // check whether the url field is present, in which case we will get the
+  // actors/topics from this article
+  $url_data = get_filter_url($_POST, $tablename);
+  if ( ! empty($url_data)) {
+    $fa = $url_data[0];
+    $ft = $url_data[1];
+  } else {
+    $fa = get_filtered_actors($_POST, $actors, $pfa);
+    $ft = get_filtered_topics($_POST, $topics, $pft);
+  }
   $fd = get_start_date($_POST, $task_start_date[$task_id]);
   $td = get_end_date($_POST, $task_end_date[$task_id]);
   $session = get_or_set_session_id($_POST);
@@ -204,6 +214,7 @@
               </tr>
             </tbody>
           </table>
+          
           <!--
           <p class="footer">
             <?php //show_task_options($task_id, $_POST); ?>
@@ -215,6 +226,15 @@
             <textarea rel="tooltip" title="Enter your answer here. Incase you find this task difficult, please enter your feedback here." name="answer-text" id="answer-text" placeholder="<?php //echo $answer;?>" cols=120 rows=2 class="ui-widget ui-state-default ui-corner-all no-resize tipsy"></textarea>
           </p>
           -->
+          
+          <br/>
+            Want the story around an article? Enter its URL here!: 
+            <?php
+              $url_value = isset($_POST['url']) ? $_POST['url'] : '';
+              $url_placeholder = isset($_POST['url']) ? '' : "Enter an article's url";
+            ?>
+            <input type="text" class="ui-widget ui-state-default ui-corner-all" id="url" name="url"
+                   placeholder="<?php echo $url_placeholder;?>" value="<?php echo $url_value;?>"/>
         </form>
       </div>
       <div class="span3" id="mpa-list">

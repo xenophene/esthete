@@ -136,6 +136,27 @@
     }
     return $ft;
   }
+  function get_filter_url($d, $tablename) {
+    if (isset($d['url'])) {
+      $url = $d['url'];
+      // search in the db
+      $query = "SELECT * FROM `url_aid` WHERE `url`='$url'";
+      $result = mysql_query($query);
+      if (mysql_num_rows($result) > 0) {
+        $row = mysql_fetch_assoc($result);
+        $aid = $row['aid'];
+        $query = "SELECT * FROM `$tablename` WHERE `aid`='$aid'";
+        $result = mysql_query($query);
+        if (mysql_num_rows($result)) {
+          $row = mysql_fetch_assoc($result);
+          $actors = array_slice(explode(',', $row['uactors']), 0, 2);
+          $topics = array_slice(explode(';', $row['utopics']), 0, 2);
+          return array($actors, $topics);
+        }
+      }
+    }
+    return array();
+  }
   
   function get_past_filters($d, $key, $default) {
     $sep = $key == 'past-fa' ? ',' : ';';
@@ -594,14 +615,14 @@
       $c = sizeof($article_ids) >= 3 ? PROMINENT : DULL;
       $media = array(
                   'media'   =>  $anchors,
-                  'credit'  =>  '',
-                  'caption' =>  ''
+                  'credit'  =>  'credit',
+                  'caption' =>  'hello'
                   );
       $elem = array(
         'startDate'   =>    $articles[$startaid]->get_start_date_timelinejs(),
-        'headline'    =>    '',
+        'headline'    =>    'headline',
         'endDate'     =>    $ed,
-        'text'        =>    $summary,
+        'text'        =>    $summary . ' google.com',
         'asset'       =>    $media
       );
       array_push($elems, $elem);
@@ -642,6 +663,23 @@
         $anchors = create_headline_anchors($articles, $h_text, $article_ids);
         $h = implode(DESCRIPTION_DELIMITER, array($all_actors , $all_topics, $h));
         $c = sizeof($article_ids) >= 3 ? PROMINENT : DULL;
+        
+        // get the an image for the article_ids if present otherwise fallback
+        foreach ($article_ids as $article_id){
+          $aid = $articles[$article_id]->get_id();
+          $query = "SELECT * FROM `url_aid` WHERE `aid`='$aid'";
+          $result = mysql_query($query);
+          if ( ! mysql_num_rows($result)) {
+            continue;
+          } else {
+            $row = mysql_fetch_assoc($result);
+            $image_url = $row['image_url'];
+            if ($image_url == '') continue;
+            $summary = $anchors . $summary;
+            $anchors = $image_url;
+            break;
+          }
+        }
         $media = array(
                     'media'   =>  $anchors,
                     'credit'  =>  '',
