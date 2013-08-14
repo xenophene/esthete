@@ -137,7 +137,8 @@
     return $ft;
   }
   function get_filter_url($d, $tablename) {
-    if (isset($d['url'])) {
+    if (isset($d['url']) && !empty($d['url'])) {
+      
       $url = $d['url'];
       // search in the db
       $query = "SELECT * FROM `url_aid` WHERE `url`='$url'";

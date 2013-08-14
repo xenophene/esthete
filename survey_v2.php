@@ -227,14 +227,30 @@
           </p>
           -->
           
-          <br/>
-            Want the story around an article? Enter its URL here!: 
+            Want the story around an article? Select its URL from here!: 
             <?php
               $url_value = isset($_POST['url']) ? $_POST['url'] : '';
               $url_placeholder = isset($_POST['url']) ? '' : "Enter an article's url";
+              $urls = array(
+'http://www.thehindu.com/news/national/mamata-offers-support-for-stringent-punishment/article4253461.ece',
+'http://www.thehindu.com/news/national/other-states/fouryearold-dalit-girl-raped-in-karad/article2840603.ece',                           'http://www.thehindu.com/news/strausskahn-maid-reach-agreement/article4151318.ece',
+'http://www.thehindu.com/news/cities/chennai/rape-accused-remanded-to-judicial-custody/article2876321.ece','http://www.thehindu.com/news/cities/Madurai/crime-against-mentally-ill-women-on-the-rise/article2810812.ece'
+                        );
             ?>
-            <input type="text" class="ui-widget ui-state-default ui-corner-all" id="url" name="url"
-                   placeholder="<?php echo $url_placeholder;?>" value="<?php echo $url_value;?>"/>
+            <select name="url" id="url">
+              <option value="">No url selected</option>
+              <?php foreach ($urls as $url): ?>
+              <option value="<?php echo $url;?>">
+              <?php
+                foreach (explode('/', $url) as $elem) {
+                  if (strpos($elem, '-') !== false) {
+                    $headline = ucwords(str_replace('-', ' ', $elem));
+                  }
+                }
+                echo $headline;
+              ?></option>
+              <?php endforeach; ?>
+            </select>
         </form>
       </div>
       <div class="span3" id="mpa-list">
